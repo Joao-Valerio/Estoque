@@ -19,23 +19,61 @@ from .models import (
     Fornecedor,
 )
 
-class ProdutosPageView(TemplateView):
+class DashboardContextMixin:
+
+    def get_dashboard_context(self):
+        total = (
+            Produto.objects.annotate(
+                subtotal=F("quantidade") * F("preco")
+            ).aggregate(
+                total=Sum("subtotal")
+            )["total"]
+        )
+
+        estoque_baixo = Produto.objects.filter(
+            quantidade__gt=0,
+            quantidade__lte=F("quantidade_minima")
+        )
+
+        em_estoque = Produto.objects.filter(
+            quantidade__gt=0
+        )
+
+        return {
+            "produtos_count": Produto.objects.count(),
+
+            "sem_estoque_count": Produto.objects.filter(
+                quantidade=0
+            ).count(),
+
+            "estoque_baixo_count": estoque_baixo.count(),
+
+            "estoque_baixo": estoque_baixo,
+
+            "em_estoque_count": em_estoque.count(),
+
+            "em_estoque": em_estoque,
+
+            "valor_total": total or Decimal("0"),
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.get_dashboard_context())
+        return context
+
+class ProdutosPageView(DashboardContextMixin, TemplateView):
     template_name = "produtos.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        produtos = Produto.objects.select_related(
-            "categoria", "fornecedor"
-        ).order_by("nome")
-        context["produtos"] = produtos
-        context["produtos_count"] = produtos.count()    
-        context["sem_estoque"] = Produto.objects.filter(
-            quantidade=0
-        ).count()
-        context["estoque_baixo"] = Produto.objects.filter(
-            quantidade__gt=0,
-            quantidade__lte=F("quantidade_minima")
+
+        context["produtos"] = (
+            Produto.objects
+            .select_related("categoria", "fornecedor")
+            .order_by("nome")
         )
+
         return context
 
 class HomePageView(TemplateView):
@@ -44,14 +82,9 @@ class HomePageView(TemplateView):
 class ModeloPageView(TemplateView):
     template_name = "modelo.html"
 
-class EstoquePageView(TemplateView):
+class EstoquePageView(DashboardContextMixin, TemplateView):
     template_name = "estoque.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["produtos_count"] = Produto.objects.count()
-        return context
-
+        
 class RelatorioPageView(TemplateView):
     template_name = "relatorio.html"
 
@@ -64,39 +97,8 @@ class ConfiguracoesPageView(TemplateView):
 class ContatoPageView(TemplateView):
     template_name = "contato.html"
 
-class PainelPageView(TemplateView):
+class PainelPageView(DashboardContextMixin, TemplateView):
     template_name = "painel.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["produtos_count"] = Produto.objects.count()
-
-        context["sem_estoque"] = Produto.objects.filter(
-            quantidade=0
-        ).count()
-
-        context["estoque_baixo"] = Produto.objects.filter(
-            quantidade__gt=0,
-            quantidade__lte=F("quantidade_minima")
-        ).count()
-
-        context["mais_vendidos"] = 0
-
-        total = (
-            Produto.objects.annotate(
-                subtotal=F("quantidade") * F("preco")
-            ).aggregate(
-                v=Sum("subtotal")
-            )["v"]
-        )
-
-        context["valor_total"] = (
-            total if total is not None else Decimal("0")
-        )
-
-        return context
-
 
 class RelatoriosPageView(TemplateView):
     template_name = "relatorios.html"

@@ -84,6 +84,35 @@
 
         </div>
 
+        <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
+
+            <div class="flex items-start justify-between">
+
+                <div class="space-y-2">
+
+                    <p class="text-sm font-medium text-sand-500">
+                        Em Estoque
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-red-500">
+                        {{ em_estoque_count|default:"0" }}
+                    </h2>
+
+                </div>
+
+                <div class="rounded-xl bg-red-100 p-3">
+
+                    <ion-icon
+                        name="alert-circle"
+                        class="text-2xl text-green-600"
+                    ></ion-icon>
+
+                </div>
+
+            </div>
+
+        </div>
+
         <!-- CARD -->
         <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
 
@@ -96,12 +125,41 @@
                     </p>
 
                     <h2 class="text-3xl font-bold text-red-500">
-                        {{ estoque_baixo|default:"0" }}
+                        {{ estoque_baixo_count|default:"0" }}
                     </h2>
 
                 </div>
 
                 <div class="rounded-xl bg-red-100 p-3">
+
+                    <ion-icon
+                        name="alert-circle"
+                        class="text-2xl text-yellow-600"
+                    ></ion-icon>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
+
+            <div class="flex items-start justify-between">
+
+                <div class="space-y-2">
+
+                    <p class="text-sm font-medium text-sand-500">
+                        Sem Estoque
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-gray-500">
+                        {{ sem_estoque_count|default:"0" }}
+                    </h2>
+
+                </div>
+
+                <div class="rounded-xl bg-gray-100 p-3">
 
                     <ion-icon
                         name="alert-circle"
