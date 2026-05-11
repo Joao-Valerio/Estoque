@@ -1,0 +1,257 @@
+<!-- Componentes Reutilizáveis do StockBot -->
+<!-- Inclua estes componentes em seus templates conforme necessário -->
+
+<!-- ==================== MODAIS ==================== -->
+
+<!-- Modal Base -->
+<div id="modal-base" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/20" onclick="closeModal('modal-base')"></div>
+    <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 animate-slide-up">
+        <div class="p-6">
+            <!-- Título -->
+            <h2 class="text-xl font-bold text-sand-900 mb-4">Título do Modal</h2>
+            
+            <!-- Conteúdo -->
+            <div class="text-sand-600 mb-6">
+                Conteúdo do modal aqui...
+            </div>
+            
+            <!-- Botões -->
+            <div class="flex gap-3">
+                <button onclick="closeModal('modal-base')" class="btn-secondary flex-1">
+                    Cancelar
+                </button>
+                <button class="btn-primary flex-1">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== CARDS ==================== -->
+
+<!-- Card com Ícone e Valor -->
+<div class="card p-6 hover:shadow-lg transition-all duration-300">
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-sand-600 text-sm font-medium">Título</p>
+            <p class="text-3xl font-bold text-sand-900 mt-2">0</p>
+            <p class="text-xs text-green-600 mt-2">↑ 0% este mês</p>
+        </div>
+        <div class="h-14 w-14 rounded-lg bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+            <ion-icon name="cube" class="text-2xl text-blue-600"></ion-icon>
+        </div>
+    </div>
+</div>
+
+<!-- Card Simples -->
+<div class="card p-6">
+    <h3 class="text-lg font-semibold text-sand-900 mb-4">Título</h3>
+    <p class="text-sand-600">Conteúdo aqui...</p>
+</div>
+
+<!-- ==================== BADGES ==================== -->
+
+<div class="space-y-2">
+    <span class="badge badge-success">Sucesso</span>
+    <span class="badge badge-warning">Aviso</span>
+    <span class="badge badge-danger">Perigo</span>
+    <span class="badge badge-info">Informação</span>
+</div>
+
+<!-- ==================== ALERTAS ==================== -->
+
+<!-- Alert de Sucesso -->
+<div class="p-4 rounded-lg bg-green-50 border border-green-200">
+    <div class="flex items-start gap-3">
+        <ion-icon name="checkmark-circle" class="text-lg text-green-600 flex-shrink-0 mt-0.5"></ion-icon>
+        <div>
+            <p class="text-sm font-medium text-green-900">Sucesso!</p>
+            <p class="text-xs text-green-700 mt-0.5">Operação realizada com sucesso</p>
+        </div>
+    </div>
+</div>
+
+<!-- Alert de Erro -->
+<div class="p-4 rounded-lg bg-red-50 border border-red-200">
+    <div class="flex items-start gap-3">
+        <ion-icon name="close-circle" class="text-lg text-red-600 flex-shrink-0 mt-0.5"></ion-icon>
+        <div>
+            <p class="text-sm font-medium text-red-900">Erro!</p>
+            <p class="text-xs text-red-700 mt-0.5">Algo deu errado</p>
+        </div>
+    </div>
+</div>
+
+<!-- Alert de Aviso -->
+<div class="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+    <div class="flex items-start gap-3">
+        <ion-icon name="warning" class="text-lg text-yellow-600 flex-shrink-0 mt-0.5"></ion-icon>
+        <div>
+            <p class="text-sm font-medium text-yellow-900">Aviso</p>
+            <p class="text-xs text-yellow-700 mt-0.5">Atenção requerida</p>
+        </div>
+    </div>
+</div>
+
+<!-- Alert de Informação -->
+<div class="p-4 rounded-lg bg-blue-50 border border-blue-200">
+    <div class="flex items-start gap-3">
+        <ion-icon name="information-circle" class="text-lg text-blue-600 flex-shrink-0 mt-0.5"></ion-icon>
+        <div>
+            <p class="text-sm font-medium text-blue-900">Informação</p>
+            <p class="text-xs text-blue-700 mt-0.5">Informação útil</p>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== FORMULÁRIOS ==================== -->
+
+<!-- Campo de Entrada -->
+<div>
+    <label class="block text-sm font-medium text-sand-900 mb-2">Label</label>
+    <input type="text" class="input-field" placeholder="Placeholder...">
+</div>
+
+<!-- Select -->
+<div>
+    <label class="block text-sm font-medium text-sand-900 mb-2">Label</label>
+    <select class="input-field">
+        <option>Opção 1</option>
+        <option>Opção 2</option>
+    </select>
+</div>
+
+<!-- Textarea -->
+<div>
+    <label class="block text-sm font-medium text-sand-900 mb-2">Label</label>
+    <textarea class="input-field h-24 resize-none" placeholder="Placeholder..."></textarea>
+</div>
+
+<!-- ==================== TABELAS ==================== -->
+
+<div class="overflow-x-auto card">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="table-head">
+                <th class="px-4 py-3 text-left font-semibold">Coluna 1</th>
+                <th class="px-4 py-3 text-left font-semibold">Coluna 2</th>
+                <th class="px-4 py-3 text-left font-semibold">Coluna 3</th>
+                <th class="px-4 py-3 text-center font-semibold">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="table-row">
+                <td class="px-4 py-3">Valor 1</td>
+                <td class="px-4 py-3">Valor 2</td>
+                <td class="px-4 py-3">Valor 3</td>
+                <td class="px-4 py-3 text-center">
+                    <button class="btn-icon">
+                        <ion-icon name="pencil" class="text-lg text-sand-600"></ion-icon>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ==================== BOTÕES ==================== -->
+
+<div class="space-y-2">
+    <!-- Botão Primário -->
+    <button class="btn-primary">Primário</button>
+    
+    <!-- Botão Secundário -->
+    <button class="btn-secondary">Secundário</button>
+    
+    <!-- Botão Perigo -->
+    <button class="btn-danger">Perigo</button>
+    
+    <!-- Botão Ghost -->
+    <button class="btn-ghost">Ghost</button>
+    
+    <!-- Botão Ícone -->
+    <button class="btn-icon">
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    
+    <!-- Botão com Ícone -->
+    <button class="btn-primary flex items-center gap-2">
+        <ion-icon name="add-circle"></ion-icon>
+        Novo Item
+    </button>
+</div>
+
+<!-- ==================== LOADING STATES ==================== -->
+
+<!-- Skeleton Loading -->
+<div class="card p-6 animate-pulse">
+    <div class="h-4 bg-sand-200 rounded w-1/4 mb-4"></div>
+    <div class="h-8 bg-sand-200 rounded w-1/3 mb-4"></div>
+    <div class="h-4 bg-sand-200 rounded w-1/2"></div>
+</div>
+
+<!-- Spinner -->
+<div class="flex items-center justify-center">
+    <div class="animate-spin">
+        <ion-icon name="refresh" class="text-4xl text-stone-600"></ion-icon>
+    </div>
+</div>
+
+<!-- ==================== MENUS ==================== -->
+
+<!-- Dropdown Menu -->
+<div class="relative group">
+    <button class="btn-secondary">Menu ⌄</button>
+    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-sand-100 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
+        <a href="#" class="block px-4 py-2 text-sand-700 hover:bg-sand-50 first:rounded-t-lg">Item 1</a>
+        <a href="#" class="block px-4 py-2 text-sand-700 hover:bg-sand-50">Item 2</a>
+        <a href="#" class="block px-4 py-2 text-sand-700 hover:bg-sand-50 last:rounded-b-lg">Item 3</a>
+    </div>
+</div>
+
+<!-- ==================== PAGINATION ==================== -->
+
+<div class="flex items-center justify-between mt-6 pt-4 border-t border-sand-100">
+    <p class="text-sm text-sand-600">Mostrando <span class="font-medium">1-10</span> de <span class="font-medium">100</span></p>
+    <div class="flex items-center gap-2">
+        <button class="btn-secondary px-3 py-1.5 text-sm">← Anterior</button>
+        <div class="flex items-center gap-1">
+            <button class="h-8 w-8 rounded bg-stone-600 text-white text-sm font-medium">1</button>
+            <button class="h-8 w-8 rounded hover:bg-sand-100 text-sm">2</button>
+            <button class="h-8 w-8 rounded hover:bg-sand-100 text-sm">3</button>
+        </div>
+        <button class="btn-secondary px-3 py-1.5 text-sm">Próximo →</button>
+    </div>
+</div>
+
+<!-- ==================== EMPTY STATES ==================== -->
+
+<!-- Empty State -->
+<div class="text-center py-12">
+    <ion-icon name="sad" class="text-6xl text-sand-300 mx-auto mb-4"></ion-icon>
+    <h3 class="text-xl font-bold text-sand-900 mb-2">Nenhum item encontrado</h3>
+    <p class="text-sand-600 mb-4">Tente adicionar um novo item ou ajustar seus filtros</p>
+    <a href="#" class="btn-primary">Criar novo</a>
+</div>
+
+<!-- ==================== SCRIPTS ==================== -->
+
+<script>
+    // Funções auxiliares para modais
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // Fechar modal ao clicar fora
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('absolute') && event.target.classList.contains('inset-0')) {
+            event.target.parentElement.classList.add('hidden');
+        }
+    });
+</script>

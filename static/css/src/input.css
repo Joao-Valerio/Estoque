@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+/*
+  Caminhos relativos a ESTE arquivo (static/css/src/input.css).
+  Só entram no CSS final as classes encontradas nesses arquivos.
+  Depois de mudar classes nos templates: npm run build:css (ou npm run watch:css).
+*/
+@source "../../../website/**/*.html";
+@source "../../../**/templates/**/*.html";
+
+/* Sempre gerar estes utilitários (útil se a classe vier de `class="bg-{{ ... }}"` no Django) */
+@source inline("bg-green-{400,500,600}");
+
+/*
+  Tailwind v4: cores customizadas devem ser definidas via @theme no CSS.
+  A paleta `stone` aqui sobrescreve a padrão para manter a identidade visual
+  original (tons laranja-terra usados em botões e detalhes).
+*/
+@theme {
+  --color-sand-50: #faf8f3;
+  --color-sand-100: #f5f1e8;
+  --color-sand-200: #ede5d6;
+  --color-sand-300: #e5dcc4;
+  --color-sand-400: #d9cdb0;
+  --color-sand-500: #c8ba99;
+  --color-sand-600: #b5a582;
+  --color-sand-700: #a89370;
+  --color-sand-800: #8a745a;
+  --color-sand-900: #6b5a47;
+
+  --color-stone-50: #fef5f0;
+  --color-stone-100: #fde9de;
+  --color-stone-200: #f8d7c3;
+  --color-stone-300: #f3c4a8;
+  --color-stone-400: #e89d6f;
+  --color-stone-500: #d97045;
+  --color-stone-600: #c85d35;
+  --color-stone-700: #a04d2d;
+  --color-stone-800: #7a3d24;
+  --color-stone-900: #5a2e1a;
+}
+
+@layer components {
+  /* Componentes reutilizáveis */
+  .btn-primary {
+    @apply px-4 py-2 bg-stone-600 text-white rounded-lg font-medium hover:bg-stone-700 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-sand-200 text-sand-900 rounded-lg font-medium hover:bg-sand-300 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sand-400 focus:ring-offset-2;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 bg-transparent text-sand-900 rounded-lg font-medium hover:bg-sand-100 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sand-300;
+  }
+
+  .btn-icon {
+    @apply p-2 rounded-lg hover:bg-sand-100 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-sand-300;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out border border-sand-100;
+  }
+
+  .card-hover {
+    @apply bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 ease-in-out border border-sand-100 hover:scale-105 transform transition-transform cursor-pointer;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-sand-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-500 focus:border-transparent transition-all duration-200 font-sans;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-success {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800;
+  }
+
+  .badge-danger {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800;
+  }
+
+  .table-head {
+    @apply bg-sand-50 text-sand-900 text-sm font-semibold;
+  }
+
+  .table-row {
+    @apply border-t border-sand-100 hover:bg-sand-50 transition-colors duration-150;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-sand-700 hover:bg-sand-100 transition-colors duration-200 ease-in-out font-medium;
+  }
+
+  .sidebar-link.active {
+    @apply bg-stone-600 text-white;
+  }
+
+  .sidebar-link.active ion-icon {
+    @apply text-white;
+  }
+}
+
+@layer utilities {
+  .transition-all-300 {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  .text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+}

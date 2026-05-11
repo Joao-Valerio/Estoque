@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Movimentação - StockBot{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <button onclick="window.history.back()" class="btn-icon">
+                    <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+                </button>
+                <h1 class="text-3xl font-bold text-sand-900">Nova Movimentação</h1>
+            </div>
+            <p class="text-sand-600">Registre uma entrada ou saída de estoque</p>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Produto -->
+            <div>
+                <label for="{{ form.produto.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="cube" class="text-lg align-middle"></ion-icon>
+                    Produto *
+                </label>
+                {{ form.produto }}
+                {% if form.produto.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.produto.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Tipo -->
+            <div>
+                <label for="{{ form.tipo.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="arrow-forward-circle" class="text-lg align-middle"></ion-icon>
+                    Tipo de Movimentação *
+                </label>
+                <div class="grid grid-cols-2 gap-4">
+                    {% for value, label in form.tipo.field.choices %}
+                    <label class="flex items-center gap-3 p-3 border-2 border-sand-200 rounded-lg cursor-pointer hover:border-stone-600 hover:bg-sand-50 transition-all">
+                        <input type="radio" name="{{ form.tipo.html_name }}" value="{{ value }}" class="w-4 h-4 accent-stone-600">
+                        <div>
+                            <p class="font-medium text-sand-900">
+                                {% if value == 'E' %}
+                                    <ion-icon name="arrow-down-circle" class="text-green-600"></ion-icon>
+                                    Entrada
+                                {% else %}
+                                    <ion-icon name="arrow-up-circle" class="text-orange-600"></ion-icon>
+                                    Saída
+                                {% endif %}
+                            </p>
+                            <p class="text-xs text-sand-500">
+                                {% if value == 'E' %}Aumenta estoque{% else %}Diminui estoque{% endif %}
+                            </p>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.tipo.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.tipo.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Quantidade -->
+            <div>
+                <label for="{{ form.quantidade.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="layers" class="text-lg align-middle"></ion-icon>
+                    Quantidade *
+                </label>
+                {{ form.quantidade }}
+                {% if form.quantidade.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.quantidade.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Observação -->
+            <div>
+                <label for="{{ form.observacao.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="document-text" class="text-lg align-middle"></ion-icon>
+                    Observação
+                </label>
+                {{ form.observacao }}
+                {% if form.observacao.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.observacao.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Botões -->
+            <div class="flex gap-3 pt-6 border-t border-sand-100">
+                <button type="button" onclick="window.history.back()" class="btn-secondary flex-1">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary flex-1 flex items-center justify-center gap-2">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                    Registrar Movimentação
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

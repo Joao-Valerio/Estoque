@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Categoria - StockBot{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <button onclick="window.history.back()" class="btn-icon">
+                    <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+                </button>
+                <h1 class="text-3xl font-bold text-sand-900">Nova Categoria</h1>
+            </div>
+            <p class="text-sand-600">Organize seus produtos em categorias</p>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Nome -->
+            <div>
+                <label for="{{ form.nome.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="text" class="text-lg align-middle"></ion-icon>
+                    Nome da Categoria *
+                </label>
+                {{ form.nome }}
+                {% if form.nome.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.nome.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Descrição -->
+            <div>
+                <label for="{{ form.descricao.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="document-text" class="text-lg align-middle"></ion-icon>
+                    Descrição *
+                </label>
+                {{ form.descricao }}
+                {% if form.descricao.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.descricao.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Botões -->
+            <div class="flex gap-3 pt-6 border-t border-sand-100">
+                <button type="button" onclick="window.history.back()" class="btn-secondary flex-1">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary flex-1 flex items-center justify-center gap-2">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                    Criar Categoria
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

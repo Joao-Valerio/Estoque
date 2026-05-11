@@ -1,0 +1,152 @@
+{% load static static_extras %}
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#c85d35">
+    <meta name="description" content="StockBot - Sistema de Gerenciamento de Estoque">
+
+    <title>{% block title %}StockBot - Gerenciamento de Estoque{% endblock %}</title>
+
+    <!-- CSS (com cache-busting baseado no mtime do arquivo) -->
+    <link rel="stylesheet" href="{% static_v 'css/style.css' %}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Ionicons para ícones -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-sand-50 text-sand-900 font-sans antialiased transition-colors duration-300">
+    <div id="app" class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside
+            id="sidebar"
+            class="fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full transform bg-white shadow-xl transition-transform duration-300 ease-in-out"
+        >
+            <!-- Logo -->
+            <div class="border-b border-sand-100 px-6 py-6">
+                <a href="{% url 'painel' %}" class="flex items-center gap-3 transition-opacity hover:opacity-80">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-stone-600 to-stone-700">
+                        <ion-icon name="cube" class="text-2xl text-white"></ion-icon>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-lg font-bold text-sand-900">StockBot</span>
+                        <span class="text-xs text-sand-500">Gerenciamento</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Nav Links (active via nav_section em context_processors) -->
+            <nav class="space-y-1 px-3 py-6">
+                <a href="{% url 'painel' %}" class="sidebar-link{% if nav_section == 'painel' %} active{% endif %}">
+                    <ion-icon name="grid" class="text-xl"></ion-icon>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{% url 'produtos' %}" class="sidebar-link{% if nav_section == 'produtos' %} active{% endif %}">
+                    <ion-icon name="cube" class="text-xl"></ion-icon>
+                    <span>Produtos</span>
+                </a>
+
+                <a href="{% url 'estoque' %}" class="sidebar-link{% if nav_section == 'estoque' %} active{% endif %}">
+                    <ion-icon name="layers" class="text-xl"></ion-icon>
+                    <span>Estoque</span>
+                </a>
+
+                <a href="{% url 'relatorios' %}" class="sidebar-link{% if nav_section == 'relatorios' %} active{% endif %}">
+                    <ion-icon name="bar-chart" class="text-xl"></ion-icon>
+                    <span>Relatórios</span>
+                </a>
+
+                <hr class="my-4 border-sand-100">
+
+                <a href="{% url 'configuracoes' %}" class="sidebar-link{% if nav_section == 'configuracoes' %} active{% endif %}">
+                    <ion-icon name="settings" class="text-xl"></ion-icon>
+                    <span>Configurações</span>
+                </a>
+
+                <a href="{% url 'contato' %}" class="sidebar-link{% if nav_section == 'contato' %} active{% endif %}">
+                    <ion-icon name="mail" class="text-xl"></ion-icon>
+                    <span>Contato</span>
+                </a>
+            </nav>
+
+            <!-- Footer -->
+            <div class="absolute bottom-0 left-0 right-0 border-t border-sand-100 bg-gradient-to-r from-sand-50 to-sand-100 p-4">
+                <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-stone-500 to-stone-600 flex items-center justify-center">
+                        <ion-icon name="person" class="text-lg text-white"></ion-icon>
+                    </div>
+                    <div class="flex flex-col">
+                        <p class="text-sm font-medium text-sand-900">Usuário</p>
+                        <p class="text-xs text-sand-500">admin@stockbot.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-black/20 transition-opacity duration-300" role="presentation" aria-hidden="true"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col">
+            <header id="dashboard-header" class="sticky top-0 z-20 shrink-0 border-b border-sand-100 bg-white/80 backdrop-blur-md overflow-hidden max-h-48 transition-[max-height,opacity,border-color] duration-300 ease-in-out">
+                <div class="flex min-h-14 items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 sm:py-4">
+                    <button type="button" id="sidebar-menu-btn" class="btn-icon shrink-0 text-sand-900" aria-label="Abrir ou fechar menu" aria-expanded="false" aria-controls="sidebar">
+                        <ion-icon name="menu" class="text-2xl" aria-hidden="true"></ion-icon>
+                    </button>
+
+                    <div class="min-w-0 flex-1 flex flex-col justify-center gap-0.5">
+                        <h1 class="truncate text-base font-semibold text-sand-900 sm:text-lg">Olá, Bem-vindo! 👋</h1>
+                        <p class="truncate text-xs text-sand-500">Aqui está seu resumo de estoque</p>
+                    </div>
+
+                    <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+                        <!-- Search -->
+                        <div class="hidden sm:flex items-center gap-2 px-4 py-2 bg-sand-50 rounded-lg border border-sand-100 focus-within:ring-2 focus-within:ring-stone-500 focus-within:border-transparent transition-all">
+                            <ion-icon name="search" class="text-sand-500"></ion-icon>
+                            <input type="text" placeholder="Buscar..." class="bg-transparent border-none outline-none text-sm w-32 placeholder-sand-400">
+                        </div>
+
+                        <!-- Notifications -->
+                        <button type="button" class="btn-icon relative group">
+                            <ion-icon name="notifications" class="text-2xl"></ion-icon>
+                            <span class="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
+                            
+                            <!-- Tooltip -->
+                            <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-sand-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                                3 notificações
+                            </div>
+                        </button>
+
+                        <!-- User Avatar -->
+                        <button type="button" class="btn-icon">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" alt="Avatar" class="h-8 w-8 rounded-full">
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div id="main-scroll-region" class="flex-1 overflow-auto">
+                <div class="px-6 py-8">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{% static_v 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

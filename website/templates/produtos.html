@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}
+Produtos - StockBot
+{% endblock %}
+
+{% block content %}
+
+<div class="space-y-8">
+
+    <!-- HEADER -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-sand-900">
+                Produtos
+            </h1>
+            <p class="mt-2 text-sm text-sand-500">
+                Gerencie todos os produtos cadastrados no sistema.
+            </p>
+        </div>
+        <!-- ACTION BUTTON -->
+        <a
+            href="{% url 'create_produto' %}"
+            class="btn-primary
+                inline-flex items-center gap-2
+                rounded-xl
+                bg-stone-700
+                px-5 py-3
+                text-sm font-medium text-white
+                shadow-sm
+                transition-all duration-200
+                hover:-translate-y-0.5
+                hover:bg-stone-800
+                hover:shadow-lg
+            "
+        >
+            <ion-icon
+                name="add"
+                class="text-lg"
+            ></ion-icon>
+            Novo Produto
+        </a>
+
+    </div>
+    <!-- SEARCH + FILTER -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <!-- SEARCH -->
+        <div class="
+            flex items-center gap-3
+            rounded-2xl
+            border border-sand-200
+            bg-white
+            px-4 py-3
+            shadow-sm
+            w-full lg:max-w-md
+        ">
+            <ion-icon
+                name="search"
+                class="text-lg text-sand-400"
+            ></ion-icon>
+            <input
+                type="text"
+                placeholder="Buscar produto..."
+                class="
+                    w-full
+                    bg-transparent
+                    text-sm
+                    outline-none
+                    placeholder:text-sand-400
+                "
+            >
+        </div>
+        <!-- FILTER -->
+        <select class="
+            rounded-xl
+            border border-sand-200
+            bg-white
+            px-4 py-3
+            text-sm
+            shadow-sm
+            outline-none
+            transition-all
+            focus:border-stone-500
+        ">
+            <option>Todos</option>
+            <option>Eletrônicos</option>
+            <option>Escritório</option>
+            <option>Limpeza</option>
+        </select>
+
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+
+        {% for produto in produtos %}
+        <!-- CARD -->
+        <div class="
+            group
+            overflow-hidden
+            rounded-3xl
+            border border-sand-100
+            bg-white
+            shadow-sm
+            transition-all duration-300
+            hover:-translate-y-1
+            hover:shadow-xl
+        ">
+            <!-- CONTENT -->
+            <div class="space-y-5 p-6">
+                <!-- INFO -->
+                <div>
+                    <div class="mb-3 flex items-center justify-between">
+                        <span class="
+                            rounded-full
+                            bg-green-100
+                            px-3 py-1
+                            text-xs font-medium
+                            text-green-700
+                        ">
+                        {% if produto.quantidade > 0 %}
+                        Em estoque
+                    {% else %}
+                        Sem estoque
+                    {% endif %}
+                        </span>
+                        <span class="text-sm text-sand-400">
+                            ID #{{ produto.pk|stringformat:"04d" }}
+                        </span>
+                    </div>
+                    <h2 class="
+                        text-xl font-bold
+                        text-sand-900
+                        transition-colors
+                        group-hover:text-stone-700
+                    ">
+                    {{ produto.nome }}
+                    </h2>
+                    <p class="mt-2 text-sm leading-relaxed text-sand-500">
+                        {{ produto.descricao }}
+                    </p>
+                </div>
+                <!-- PRICE -->
+                <div class="flex items-end justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-wide text-sand-400">
+                            Preço
+                        </p>
+                        <h3 class="text-2xl font-bold text-green-600">
+                            R$ {{ produto.preco|floatformat:2 }}
+                        </h3>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs uppercase tracking-wide text-sand-400">
+                            Quantidade
+                        </p>
+                        <h3 class="text-lg font-semibold text-sand-900">
+                            {{ produto.quantidade }} un.
+                        </h3>
+                    </div>
+                </div>
+                <!-- ACTIONS -->
+                <div class="flex items-center gap-3 pt-2">
+                    <button class="
+                        flex-1
+                        rounded-xl
+                        border border-sand-200
+                        bg-sand-50
+                        px-4 py-3
+                        text-sm font-medium
+                        text-sand-700
+                        transition-all
+                        hover:bg-sand-100
+                    ">
+                        <ion-icon
+                            name="create-outline"
+                            class="mr-1"
+                        ></ion-icon>
+                        Editar
+                    </button>
+                    <button class="
+                        flex-1
+                        rounded-xl
+                        bg-red-500
+                        px-4 py-3
+                        text-sm font-medium
+                        text-white
+                        transition-all
+                        hover:bg-red-600
+                    ">
+                        <ion-icon
+                            name="trash-outline"
+                            class="mr-1"
+                        ></ion-icon>
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

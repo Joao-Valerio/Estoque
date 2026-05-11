@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="light">
+    <meta name="theme-color" content="#c85d35">
+    <meta name="description" content="StockBot - O sistema inteligente de gerenciamento de estoque">
+    
+    <title>StockBot - Gerenciamento de Estoque Inteligente</title>
+    
+    {% load static static_extras %}
+    <link rel="stylesheet" href="{% static_v 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+</head>
+<body class="bg-sand-50 text-sand-900 font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-sand-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-stone-600 to-stone-700">
+                    <ion-icon name="cube" class="text-2xl text-white"></ion-icon>
+                </div>
+                <span class="text-xl font-bold text-sand-900">StockBot</span>
+            </div>
+            
+            <a href="{% url 'painel' %}" class="btn-primary flex items-center gap-2">
+                <ion-icon name="log-in"></ion-icon>
+                Entrar no Painel
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Content -->
+                <div class="space-y-8">
+                    <div class="space-y-4">
+                        <div class="inline-block">
+                        </div>
+                        <h1 class="text-5xl md:text-6xl font-bold text-sand-900 leading-tight">
+                            Controle de Estoque
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-stone-600 to-stone-700">Inteligente</span>
+                        </h1>
+                    </div>
+
+                    <p class="text-xl text-sand-900 leading-relaxed">
+                        Gerencie seu estoque com precisão e eficiência. StockBot oferece uma interface moderna, intuitiva e totalmente responsiva para suas operações.
+                    </p>
+
+                    <!-- Features -->
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <ion-icon name="checkmark" class="text-lg text-green-600"></ion-icon>
+                            </div>
+                            <span class="text-sand-900">Dashboard em tempo real</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <ion-icon name="checkmark" class="text-lg text-green-600"></ion-icon>
+                            </div>
+                            <span class="text-sand-900">Alertas inteligentes de estoque</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                <ion-icon name="checkmark" class="text-lg text-green-600"></ion-icon>
+                            </div>
+                            <span class="text-sand-900">Relatórios e análises detalhadas</span>
+                        </div>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <a href="{% url 'painel' %}" class="btn-primary px-8 py-3 text-lg flex items-center gap-2">
+                            <ion-icon name="arrow-forward"></ion-icon>
+                            Acessar Painel
+                        </a>
+                        <a href="#features" class="btn-secondary px-8 py-3 text-lg flex items-center gap-2">
+                            <ion-icon name="arrow-down"></ion-icon>
+                            Saiba Mais
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Illustration -->
+                <div class="hidden md:block">
+                    <div class="relative">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-stone-500 to-stone-700 rounded-full blur-3xl opacity-30"></div>
+                        <div class="relative bg-gradient-to-br from-sand-100 to-sand-50 rounded-2xl p-8 border border-sand-200">
+                            <div class="space-y-4">
+                                <div class="h-3 bg-sand-200 rounded w-3/4"></div>
+                                <div class="h-3 bg-sand-200 rounded w-1/2"></div>
+                                <div class="grid grid-cols-2 gap-3 mt-6">
+                                    <div class="h-24 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg"></div>
+                                    <div class="h-24 bg-gradient-to-br from-green-100 to-green-50 rounded-lg"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6 bg-gradient-to-b from-sand-50 to-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-sand-900 mb-4">Recursos Poderosos</h2>
+                <p class="text-xl text-sand-600">Tudo que você precisa para gerenciar estoque</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="card p-8 text-center group hover:shadow-lg transition-all">
+                    <div class="h-16 w-16 bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <ion-icon name="analytics" class="text-3xl text-blue-600"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-sand-900 mb-2">Dashboard Inteligente</h3>
+                    <p class="text-sand-600">Visualize dados em tempo real com gráficos e métricas de fácil compreensão</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="card p-8 text-center group hover:shadow-lg transition-all">
+                    <div class="h-16 w-16 bg-gradient-to-br from-green-100 to-green-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <ion-icon name="alert-circle" class="text-3xl text-green-600"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-sand-900 mb-2">Alertas Automáticos</h3>
+                    <p class="text-sand-600">Receba notificações inteligentes sobre estoque baixo e produtos parados</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="card p-8 text-center group hover:shadow-lg transition-all">
+                    <div class="h-16 w-16 bg-gradient-to-br from-purple-100 to-purple-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <ion-icon name="bar-chart" class="text-3xl text-purple-600"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-sand-900 mb-2">Relatórios Detalhados</h3>
+                    <p class="text-sand-600">Gere relatórios completos e análises profundas do seu estoque</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="card p-8 text-center group hover:shadow-lg transition-all">
+                    <div class="h-16 w-16 bg-gradient-to-br from-orange-100 to-orange-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <ion-icon name="phone-portrait" class="text-3xl text-orange-600"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-sand-900 mb-2">Totalmente Responsivo</h3>
+                    <p class="text-sand-600">Funciona perfeitamente em desktop, tablet e dispositivos móveis</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="card p-8 text-center group hover:shadow-lg transition-all">
+                    <div class="h-16 w-16 bg-gradient-to-br from-red-100 to-red-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <ion-icon name="shield-checkmark" class="text-3xl text-red-600"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-sand-900 mb-2">Seguro e Confiável</h3>
+                    <p class="text-sand-600">Dados seguros com backups automáticos e acesso controlado</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="card p-8 text-center group hover:shadow-lg transition-all">
+                    <div class="h-16 w-16 bg-gradient-to-br from-cyan-100 to-cyan-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <ion-icon name="settings" class="text-3xl text-cyan-600"></ion-icon>
+                    </div>
+                    <h3 class="text-xl font-bold text-sand-900 mb-2">Personalizável</h3>
+                    <p class="text-sand-600">Configure o sistema conforme suas necessidades específicas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gradient-to-br from-stone-600 to-stone-700 rounded-2xl p-12 text-white text-center">
+                <h2 class="text-4xl font-bold mb-4">Pronto para começar?</h2>
+                <p class="text-xl text-stone-100 mb-8">Acesse o painel e gerencie seu estoque com eficiência</p>
+                <a href="{% url 'painel' %}" class="inline-block bg-white text-stone-600 font-bold px-8 py-3 rounded-lg hover:bg-sand-100 transition-colors">
+                    Entrar no Sistema
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-sand-100 bg-sand-50 py-8 px-6">
+        <div class="max-w-6xl mx-auto text-center text-sand-600">
+            <p>&copy; 2026 StockBot. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

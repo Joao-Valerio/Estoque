@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block title %}Estoque - StockBot{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <!-- HEADER -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+        <div class="space-y-1">
+
+            <h1 class="text-3xl font-bold tracking-tight text-sand-900">
+                Estoque
+            </h1>
+
+            <p class="text-sm text-sand-500">
+                Gerencie produtos, quantidades e movimentações do estoque.
+            </p>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="flex items-center gap-3">
+
+            <a
+                href="{% url 'create_produto' %}"
+                class="
+                    inline-flex items-center gap-2
+                    rounded-xl
+                    bg-stone-700
+                    px-5 py-3
+                    text-sm font-medium text-white
+                    shadow-sm
+                    transition-all
+                    hover:bg-stone-800
+                    btn-primary
+                "
+            >
+
+                <ion-icon
+                    name="add"
+                    class="text-lg "
+                ></ion-icon>
+
+                Novo Produto
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+
+        <!-- CARD -->
+        <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
+
+            <div class="flex items-start justify-between">
+
+                <div class="space-y-2">
+
+                    <p class="text-sm font-medium text-sand-500">
+                        Produtos
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-sand-900">
+                        {{ produtos_count }}
+                    </h2>
+
+                </div>
+
+                <div class="rounded-xl bg-stone-100 p-3">
+
+                    <ion-icon
+                        name="cube"
+                        class="text-2xl text-stone-700"
+                    ></ion-icon>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CARD -->
+        <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
+
+            <div class="flex items-start justify-between">
+
+                <div class="space-y-2">
+
+                    <p class="text-sm font-medium text-sand-500">
+                        Estoque Baixo
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-red-500">
+                        {{ estoque_baixo|default:"0" }}
+                    </h2>
+
+                </div>
+
+                <div class="rounded-xl bg-red-100 p-3">
+
+                    <ion-icon
+                        name="alert-circle"
+                        class="text-2xl text-red-600"
+                    ></ion-icon>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CARD -->
+        <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
+
+            <div class="flex items-start justify-between">
+
+                <div class="space-y-2">
+
+                    <p class="text-sm font-medium text-sand-500">
+                        Movimentações
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-sand-900">
+                        58
+                    </h2>
+
+                </div>
+
+                <div class="rounded-xl bg-blue-100 p-3">
+
+                    <ion-icon
+                        name="swap-horizontal"
+                        class="text-2xl text-blue-600"
+                    ></ion-icon>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CARD -->
+        <div class="card rounded-2xl border border-sand-100 bg-white p-6 shadow-sm">
+
+            <div class="flex items-start justify-between">
+
+                <div class="space-y-2">
+
+                    <p class="text-sm font-medium text-sand-500">
+                        Valor Total
+                    </p>
+
+                    <h2 class="text-3xl font-bold text-green-600">
+                        R$ 42k
+                    </h2>
+
+                </div>
+
+                <div class="rounded-xl bg-green-100 p-3">
+
+                    <ion-icon
+                        name="cash"
+                        class="text-2xl text-green-600"
+                    ></ion-icon>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="overflow-hidden rounded-2xl border border-sand-100 bg-white shadow-sm">
+
+        <!-- TABLE HEADER -->
+        <div class="flex flex-col gap-4 border-b border-sand-100 p-6 lg:flex-row lg:items-center lg:justify-between">
+
+            <div>
+
+                <h2 class="text-lg font-semibold text-sand-900">
+                    Produtos em Estoque
+                </h2>
+
+                <p class="text-sm text-sand-500">
+                    Lista de produtos cadastrados no sistema.
+                </p>
+
+            </div>
+
+            <!-- SEARCH -->
+            <div class="flex items-center gap-2 rounded-xl border border-sand-100 bg-sand-50 px-4 py-2">
+
+                <ion-icon
+                    name="search"
+                    class="text-sand-500"
+                ></ion-icon>
+
+                <input
+                    type="text"
+                    placeholder="Buscar produto..."
+                    class="
+                        w-52
+                        bg-transparent
+                        text-sm
+                        outline-none
+                        placeholder-sand-400
+                    "
+                >
+
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <div class="overflow-x-auto">
+
+            <table class="min-w-full divide-y divide-sand-100">
+
+                <thead class="bg-sand-50">
+
+                    <tr>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                            Produto
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                            Categoria
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                            Quantidade
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                            Preço
+                        </th>
+
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                            Status
+                        </th>
+
+                        <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-sand-500">
+                            Ações
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="divide-y divide-sand-100 bg-white">
+
+                    <!-- ITEM -->
+                    <tr class="transition-colors hover:bg-sand-50">
+
+                        <td class="whitespace-nowrap px-6 py-4">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100">
+
+                                    <ion-icon
+                                        name="cube"
+                                        class="text-lg text-stone-700"
+                                    ></ion-icon>
+
+                                </div>
+
+                                <div>
+
+                                    <p class="font-medium text-sand-900">
+                                        Notebook Dell
+                                    </p>
+
+                                    <p class="text-sm text-sand-500">
+                                        SKU #1023
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                        <td class="px-6 py-4 text-sm text-sand-600">
+                            Eletrônicos
+                        </td>
+
+                        <td class="px-6 py-4 text-sm font-medium text-sand-900">
+                            32
+                        </td>
+
+                        <td class="px-6 py-4 text-sm font-medium text-green-600">
+                            R$ 4.500
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            <span class="
+                                inline-flex items-center rounded-full
+                                bg-green-100 px-3 py-1
+                                text-xs font-medium text-green-700
+                            ">
+                                Em estoque
+                            </span>
+
+                        </td>
+
+                        <td class="px-6 py-4 text-right">
+
+                            <div class="flex items-center justify-end gap-2">
+
+                                <button class="
+                                    rounded-lg
+                                    p-2
+                                    text-sand-500
+                                    transition-colors
+                                    hover:bg-sand-100
+                                    hover:text-sand-900
+                                ">
+
+                                    <ion-icon
+                                        name="create-outline"
+                                        class="text-lg"
+                                    ></ion-icon>
+
+                                </button>
+
+                                <button class="
+                                    rounded-lg
+                                    p-2
+                                    text-red-500
+                                    transition-colors
+                                    hover:bg-red-50
+                                ">
+
+                                    <ion-icon
+                                        name="trash-outline"
+                                        class="text-lg"
+                                    ></ion-icon>
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
