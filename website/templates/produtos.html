@@ -124,7 +124,7 @@ Produtos - StockBot
                         Sem estoque
                     {% endif %}
                         </span>
-                        <span class="text-sm text-sand-400">
+                        <span class="text-sm text-sand-600">
                             ID #{{ produto.pk|stringformat:"04d" }}
                         </span>
                     </div>
@@ -136,14 +136,14 @@ Produtos - StockBot
                     ">
                     {{ produto.nome }}
                     </h2>
-                    <p class="mt-2 text-sm leading-relaxed text-sand-500">
+                    <p class="mt-2 text-sm leading-relaxed text-sand-600">
                         {{ produto.descricao }}
                     </p>
                 </div>
                 <!-- PRICE -->
                 <div class="flex items-end justify-between">
                     <div>
-                        <p class="text-xs uppercase tracking-wide text-sand-400">
+                        <p class="text-xs uppercase tracking-wide text-sand-600">
                             Preço
                         </p>
                         <h3 class="text-2xl font-bold text-green-600">
@@ -151,7 +151,7 @@ Produtos - StockBot
                         </h3>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs uppercase tracking-wide text-sand-400">
+                        <p class="text-xs uppercase tracking-wide text-sand-900">
                             Quantidade
                         </p>
                         <h3 class="text-lg font-semibold text-sand-900">
@@ -161,7 +161,7 @@ Produtos - StockBot
                 </div>
                 <!-- ACTIONS -->
                 <div class="flex items-center gap-3 pt-2">
-                    <button class="
+                    <a href="{% url 'update_produto' produto.pk %}" class="
                         flex-1
                         rounded-xl
                         border border-sand-200
@@ -177,7 +177,7 @@ Produtos - StockBot
                             class="mr-1"
                         ></ion-icon>
                         Editar
-                    </button>
+                    </a>
                     <button class="
                         flex-1
                         rounded-xl

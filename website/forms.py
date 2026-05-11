@@ -110,3 +110,17 @@ class FornecedorForm(forms.ModelForm):
                 attrs={"class": TEXTAREA_CLASSES, "placeholder": "Endereço completo..."}
             ),
         }
+
+class UpdateProdutoForm(forms.ModelForm):
+    class Meta:
+        model = Produto
+        fields = ["nome", "descricao", "preco", "quantidade", "quantidade_minima", "categoria", "fornecedor"]
+        widgets = {
+            "nome": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Ex.: Notebook Dell"}),
+            "descricao": forms.Textarea(attrs={"class": TEXTAREA_CLASSES, "placeholder": "Descrição do produto..."}),
+            "preco": forms.NumberInput(attrs={"class": f"{INPUT_CLASSES} text-base", "placeholder": "0.00", "step": "0.01", "min": "0", "inputmode": "decimal"}),
+            "quantidade": forms.NumberInput(attrs={"class": INPUT_CLASSES, "placeholder": "0", "min": "0", "inputmode": "numeric"}),
+            "quantidade_minima": forms.NumberInput(attrs={"class": INPUT_CLASSES, "placeholder": "15", "min": "0", "inputmode": "numeric"}),
+            "categoria": forms.Select(attrs={"class": INPUT_CLASSES}),
+            "fornecedor": forms.Select(attrs={"class": INPUT_CLASSES}),
+        }

@@ -3,13 +3,14 @@ from decimal import Decimal
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, UpdateView
 
 from .forms import (
     ProdutoForm,
     CategoriaForm,
     MovimentacaoForm,
     FornecedorForm,
+    UpdateProdutoForm,
 )
 from .models import (
     Produto,
@@ -118,9 +119,14 @@ class CreateMovimentacaoPageView(CreateView):
     template_name = "create_movimentacao.html"
     success_url = reverse_lazy("painel")
 
-
 class CreateFornecedorPageView(CreateView):
     model = Fornecedor
     form_class = FornecedorForm
     template_name = "create_fornecedor.html"
     success_url = reverse_lazy("painel")
+
+class UpdateProdutoPageView(UpdateView):
+    model = Produto
+    form_class = UpdateProdutoForm
+    template_name = "update_produto.html"
+    success_url = reverse_lazy("produtos")
