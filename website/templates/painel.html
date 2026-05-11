@@ -57,7 +57,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sand-600 text-sm font-medium">Estoque Baixo</p>
-                <p class="text-3xl font-bold text-sand-900 mt-2">{{ estoque_baixo|default:"0" }}</p>
+                <p class="text-3xl font-bold text-sand-900 mt-2">{{ estoque_baixo_count|default:"0" }}</p>
                 <p class="text-xs text-yellow-600 mt-2">Atenção requerida</p>
             </div>
             <div class="h-14 w-14 rounded-lg bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center">
@@ -71,7 +71,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sand-600 text-sm font-medium">Sem Estoque</p>
-                <p class="text-3xl font-bold text-sand-900 mt-2">{{ sem_estoque|default:"0" }}</p>
+                <p class="text-3xl font-bold text-sand-900 mt-2">{{ sem_estoque_count|default:"0" }}</p>
                 <p class="text-xs text-red-600 mt-2">Reposição urgente</p>
             </div>
             <div class="h-14 w-14 rounded-lg bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
