@@ -85,15 +85,15 @@
                         Em Estoque
                     </p>
 
-                    <h2 class="text-3xl font-bold text-red-500">
+                    <h2 class="text-3xl font-bold text-sand-900">
                         {{ em_estoque_count|default:"0" }}
                     </h2>
 
                 </div>
 
-                <div class="rounded-xl bg-red-100 p-3">
+                <div class="rounded-xl bg-green-100 p-3">
 
-                    <ion-icon name="alert-circle" class="text-2xl text-green-600"></ion-icon>
+                    <ion-icon name="cube" class="text-2xl text-green-600"></ion-icon>
 
                 </div>
 
@@ -112,13 +112,13 @@
                         Estoque Baixo
                     </p>
 
-                    <h2 class="text-3xl font-bold text-red-500">
+                    <h2 class="text-3xl font-bold text-yellow-600">
                         {{ estoque_baixo_count|default:"0" }}
                     </h2>
 
                 </div>
 
-                <div class="rounded-xl bg-red-100 p-3">
+                <div class="rounded-xl bg-yellow-100 p-3">
 
                     <ion-icon name="alert-circle" class="text-2xl text-yellow-600"></ion-icon>
 
@@ -138,13 +138,13 @@
                         Sem Estoque
                     </p>
 
-                    <h2 class="text-3xl font-bold text-gray-500">
+                    <h2 class="text-3xl font-bold text-red-500">
                         {{ sem_estoque_count|default:"0" }}
                     </h2>
 
                 </div>
 
-                <div class="rounded-xl bg-gray-100 p-3">
+                <div class="rounded-xl bg-red-100 p-3">
 
                     <ion-icon name="alert-circle" class="text-2xl text-red-600"></ion-icon>
 
@@ -192,8 +192,8 @@
                         Valor Total
                     </p>
 
-                    <h2 class="text-3xl font-bold text-green-600">
-                        R$ {{ valor_total|floatformat:2 }}
+                    <h2 class="text-3xl font-bold">
+                        <span class="text-sand-800">R$ </span><span class="text-green-600">{{ valor_total|floatformat:2 }}</span>
                     </h2>
 
                 </div>
