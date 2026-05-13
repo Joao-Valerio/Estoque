@@ -84,7 +84,17 @@ class ModeloPageView(TemplateView):
 
 class EstoquePageView(DashboardContextMixin, TemplateView):
     template_name = "estoque.html"
-        
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["produtos"] = (
+            Produto.objects.select_related("categoria", "fornecedor").order_by(
+                "nome"
+            )
+        )
+        return context
+
+
 class RelatorioPageView(TemplateView):
     template_name = "relatorio.html"
 

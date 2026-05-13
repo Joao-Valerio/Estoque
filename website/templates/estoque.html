@@ -23,9 +23,7 @@
         <!-- ACTIONS -->
         <div class="flex items-center gap-3">
 
-            <a
-                href="{% url 'create_produto' %}"
-                class="
+            <a href="{% url 'create_produto' %}" class="
                     inline-flex items-center gap-2
                     rounded-xl
                     bg-stone-700
@@ -35,13 +33,9 @@
                     transition-all
                     hover:bg-stone-800
                     btn-primary
-                "
-            >
+                ">
 
-                <ion-icon
-                    name="add"
-                    class="text-lg "
-                ></ion-icon>
+                <ion-icon name="add" class="text-lg "></ion-icon>
 
                 Novo Produto
 
@@ -73,10 +67,7 @@
 
                 <div class="rounded-xl bg-stone-100 p-3">
 
-                    <ion-icon
-                        name="cube"
-                        class="text-2xl text-stone-700"
-                    ></ion-icon>
+                    <ion-icon name="cube" class="text-2xl text-stone-700"></ion-icon>
 
                 </div>
 
@@ -102,10 +93,7 @@
 
                 <div class="rounded-xl bg-red-100 p-3">
 
-                    <ion-icon
-                        name="alert-circle"
-                        class="text-2xl text-green-600"
-                    ></ion-icon>
+                    <ion-icon name="alert-circle" class="text-2xl text-green-600"></ion-icon>
 
                 </div>
 
@@ -132,10 +120,7 @@
 
                 <div class="rounded-xl bg-red-100 p-3">
 
-                    <ion-icon
-                        name="alert-circle"
-                        class="text-2xl text-yellow-600"
-                    ></ion-icon>
+                    <ion-icon name="alert-circle" class="text-2xl text-yellow-600"></ion-icon>
 
                 </div>
 
@@ -161,10 +146,7 @@
 
                 <div class="rounded-xl bg-gray-100 p-3">
 
-                    <ion-icon
-                        name="alert-circle"
-                        class="text-2xl text-red-600"
-                    ></ion-icon>
+                    <ion-icon name="alert-circle" class="text-2xl text-red-600"></ion-icon>
 
                 </div>
 
@@ -191,10 +173,7 @@
 
                 <div class="rounded-xl bg-blue-100 p-3">
 
-                    <ion-icon
-                        name="swap-horizontal"
-                        class="text-2xl text-blue-600"
-                    ></ion-icon>
+                    <ion-icon name="swap-horizontal" class="text-2xl text-blue-600"></ion-icon>
 
                 </div>
 
@@ -214,17 +193,14 @@
                     </p>
 
                     <h2 class="text-3xl font-bold text-green-600">
-                        R$ 42k
+                        R$ {{ valor_total|floatformat:2 }}
                     </h2>
 
                 </div>
 
                 <div class="rounded-xl bg-green-100 p-3">
 
-                    <ion-icon
-                        name="cash"
-                        class="text-2xl text-green-600"
-                    ></ion-icon>
+                    <ion-icon name="cash" class="text-2xl text-green-600"></ion-icon>
 
                 </div>
 
@@ -246,8 +222,8 @@
                     Produtos em Estoque
                 </h2>
 
-                <p class="text-sm text-sand-500">
-                    Lista de produtos cadastrados no sistema.
+                <p class="text-sm text-sand-600">
+                    Lista de produtos em estoque dentro do sistema.
                 </p>
 
             </div>
@@ -255,166 +231,238 @@
             <!-- SEARCH -->
             <div class="flex items-center gap-2 rounded-xl border border-sand-100 bg-sand-50 px-4 py-2">
 
-                <ion-icon
-                    name="search"
-                    class="text-sand-500"
-                ></ion-icon>
+                <ion-icon name="search" class="text-sand-500"></ion-icon>
 
-                <input
-                    type="text"
-                    placeholder="Buscar produto..."
-                    class="
+                <input type="text" placeholder="Buscar produto..." class="
                         w-52
                         bg-transparent
                         text-sm
                         outline-none
                         placeholder-sand-400
-                    "
-                >
+                    ">
 
             </div>
 
         </div>
 
         <!-- TABLE -->
-        <div class="overflow-x-auto">
+        <div class="overflow-hidden rounded-3xl border border-sand-200 bg-white shadow-sm">
 
-            <table class="min-w-full divide-y divide-sand-100">
+            <div class="overflow-x-auto">
 
-                <thead class="bg-sand-50">
+                <table class="w-full min-w-full table-auto">
 
-                    <tr>
+                    <!-- HEADER -->
+                    <thead class="border-b border-sand-100 bg-sand-50">
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
-                            Produto
-                        </th>
+                        <tr>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
-                            Categoria
-                        </th>
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                                Produto
+                            </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
-                            Quantidade
-                        </th>
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                                Categoria
+                            </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
-                            Preço
-                        </th>
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                                Quantidade
+                            </th>
 
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
-                            Status
-                        </th>
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                                Preço
+                            </th>
 
-                        <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-sand-500">
-                            Ações
-                        </th>
+                            <th
+                                class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">
+                                Status
+                            </th>
 
-                    </tr>
+                            <th
+                                class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-sand-500">
+                                Ações
+                            </th>
 
-                </thead>
+                        </tr>
 
-                <tbody class="divide-y divide-sand-100 bg-white">
+                    </thead>
 
-                    <!-- ITEM -->
-                    <tr class="transition-colors hover:bg-sand-50">
+                    <!-- BODY -->
+                    <tbody class="divide-y divide-sand-100">
 
-                        <td class="whitespace-nowrap px-6 py-4">
+                        {% for produto in produtos %}
 
-                            <div class="flex items-center gap-3">
+                        <tr class="transition hover:bg-sand-50">
 
-                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100">
+                            <!-- PRODUTO -->
+                            <td class="px-6 py-5">
 
-                                    <ion-icon
-                                        name="cube"
-                                        class="text-lg text-stone-700"
-                                    ></ion-icon>
+                                <div class="flex items-center gap-4">
+
+                                    <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100">
+
+                                        <ion-icon name="cube" class="text-xl text-stone-700"></ion-icon>
+
+                                    </div>
+
+                                    <div>
+
+                                        <p class="font-semibold text-sand-900">
+                                            {{ produto.nome }}  
+                                        </p>
+
+                                        <p class="text-sm text-sand-500">
+                                            ID #{{ produto.pk|stringformat:"04d" }}
+                                        </p>
+
+                                    </div>
 
                                 </div>
 
-                                <div>
+                            </td>
 
-                                    <p class="font-medium text-sand-900">
-                                        Notebook Dell
-                                    </p>
+                            <!-- CATEGORIA -->
+                            <td class="px-6 py-5 text-sm text-sand-600">
 
-                                    <p class="text-sm text-sand-500">
-                                        SKU #1023
-                                    </p>
+                                {% if produto.categoria %}
+                                {{ produto.categoria.nome }}
+                                {% else %}
+                                Sem categoria
+                                {% endif %}
 
-                                </div>
+                            </td>
 
-                            </div>
+                            <!-- QUANTIDADE -->
+                            <td class="px-6 py-5">
 
-                        </td>
+                                <span class="font-semibold text-sand-900">
+                                    {{ produto.quantidade }}
+                                </span>
 
-                        <td class="px-6 py-4 text-sm text-sand-600">
-                            Eletrônicos
-                        </td>
+                            </td>
 
-                        <td class="px-6 py-4 text-sm font-medium text-sand-900">
-                            32
-                        </td>
+                            <!-- PREÇO -->
+                            <td class="px-6 py-5">
 
-                        <td class="px-6 py-4 text-sm font-medium text-green-600">
-                            R$ 4.500
-                        </td>
+                                <span class="font-semibold text-green-600">
+                                    R$ {{ produto.preco|floatformat:2 }}
+                                </span>
 
-                        <td class="px-6 py-4">
+                            </td>
 
-                            <span class="
+                            <!-- STATUS -->
+                            <td class="px-6 py-5">
+
+                                {% if produto.quantidade == 0 %}
+
+                                <span class="
+                                inline-flex items-center rounded-full
+                                bg-red-100 px-3 py-1
+                                text-xs font-semibold text-red-700
+                            ">
+                                    Sem estoque
+                                </span>
+
+                                {% elif produto.quantidade <= produto.quantidade_minima %}
+                                <span class="
+                                inline-flex items-center rounded-full
+                                bg-yellow-100 px-3 py-1
+                                text-xs font-semibold text-yellow-700
+                            ">
+                                    Estoque baixo
+                                </span>
+
+                                {% else %}
+
+                                <span class="
                                 inline-flex items-center rounded-full
                                 bg-green-100 px-3 py-1
-                                text-xs font-medium text-green-700
+                                text-xs font-semibold text-green-700
                             ">
-                                Em estoque
-                            </span>
+                                    Em estoque
+                                </span>
 
-                        </td>
+                                {% endif %}
 
-                        <td class="px-6 py-4 text-right">
+                            </td>
 
-                            <div class="flex items-center justify-end gap-2">
+                            <!-- AÇÕES -->
+                            <td class="px-6 py-5">
 
-                                <button class="
-                                    rounded-lg
-                                    p-2
+                                <div class="flex items-center justify-end gap-2">
+
+                                    <!-- EDITAR -->
+                                    <a href="{% url 'update_produto' produto.id %}" class="
+                                    rounded-xl p-2.5
                                     text-sand-500
-                                    transition-colors
+                                    transition
                                     hover:bg-sand-100
                                     hover:text-sand-900
                                 ">
 
-                                    <ion-icon
-                                        name="create-outline"
-                                        class="text-lg"
-                                    ></ion-icon>
+                                        <ion-icon name="create-outline" class="text-lg"></ion-icon>
 
-                                </button>
+                                    </a>
 
-                                <button class="
-                                    rounded-lg
-                                    p-2
+                                    <!-- EXCLUIR -->
+                                    <button class="
+                                    rounded-xl p-2.5
                                     text-red-500
-                                    transition-colors
+                                    transition
                                     hover:bg-red-50
                                 ">
 
-                                    <ion-icon
-                                        name="trash-outline"
-                                        class="text-lg"
-                                    ></ion-icon>
+                                        <ion-icon name="trash-outline" class="text-lg"></ion-icon>
 
-                                </button>
+                                    </button>
 
-                            </div>
+                                </div>
 
-                        </td>
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                </tbody>
+                        {% empty %}
 
-            </table>
+                        <!-- EMPTY STATE -->
+                        <tr>
+
+                            <td colspan="6" class="px-6 py-16 text-center">
+
+                                <div class="flex flex-col items-center">
+
+                                    <div
+                                        class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sand-100">
+
+                                        <ion-icon name="cube-outline" class="text-3xl text-sand-500"></ion-icon>
+
+                                    </div>
+
+                                    <h3 class="text-lg font-semibold text-sand-800">
+                                        Nenhum produto encontrado
+                                    </h3>
+
+                                    <p class="mt-1 text-sm text-sand-500">
+                                        Cadastre um novo produto no sistema.
+                                    </p>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 
