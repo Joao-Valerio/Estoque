@@ -258,6 +258,7 @@ class CreateMovimentacaoEntradaView(ModelFormPageMixin, CreateView):
                 form.add_error(None, "Produto não encontrado.")
                 return self.form_invalid(form)
             mov.save()
+        self.object = mov
         return redirect(self.get_success_url())
 
 
@@ -293,6 +294,7 @@ class CreateMovimentacaoSaidaView(ModelFormPageMixin, CreateView):
                 return self.form_invalid(form)
             Produto.objects.filter(pk=prod.pk).update(quantidade=F("quantidade") - qty)
             mov.save()
+        self.object = mov
         return redirect(self.get_success_url())
 
 class CreateFornecedorPageView(ModelFormPageMixin, CreateView):
