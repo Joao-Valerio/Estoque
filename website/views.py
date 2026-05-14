@@ -110,6 +110,11 @@ class ContatoPageView(TemplateView):
 class PainelPageView(DashboardContextMixin, TemplateView):
     template_name = "painel.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categorias"] = Categoria.objects.order_by("nome")
+        return context
+
 class RelatoriosPageView(TemplateView):
     template_name = "relatorios.html"
 

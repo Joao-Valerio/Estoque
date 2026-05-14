@@ -7,12 +7,17 @@
 <div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
     <!-- Category Filter -->
     <div>
-        <label class="block text-sm font-medium text-sand-700 mb-2">Filtrar por Categoria</label>
-        <select class="input-field">
+        <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <label for="filtro-categoria" class="block text-sm font-medium text-sand-700">Filtrar por Categoria</label>
+            <a href="{% url 'create_categoria' %}" class="text-sm font-medium text-orange-600 hover:text-orange-700 whitespace-nowrap">
+                + Nova categoria
+            </a>
+        </div>
+        <select id="filtro-categoria" name="categoria" class="input-field">
             <option value="">Todas as categorias</option>
-            <option value="1">Eletrônicos</option>
-            <option value="2">Alimentos</option>
-            <option value="3">Vestuário</option>
+            {% for cat in categorias %}
+            <option value="{{ cat.pk }}">{{ cat.nome }}</option>
+            {% endfor %}
         </select>
     </div>
     <!-- Stock Status Filter -->
