@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView, UpdateView
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 
 from .forms import (
     ProdutoForm,
@@ -98,6 +98,14 @@ class EstoquePageView(DashboardContextMixin, TemplateView):
 class RelatorioPageView(TemplateView):
     template_name = "relatorio.html"
 
+class FornecedoresPageView(TemplateView):
+    template_name = "fornecedores.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["fornecedores"] = Fornecedor.objects.order_by("nome")
+        return context
+
 class PerfilPageView(TemplateView):
     template_name = "perfil.html"
 
@@ -140,7 +148,20 @@ class CreateFornecedorPageView(CreateView):
     model = Fornecedor
     form_class = FornecedorForm
     template_name = "create_fornecedor.html"
-    success_url = reverse_lazy("painel")
+    success_url = reverse_lazy("fornecedores")
+
+
+class UpdateFornecedorPageView(UpdateView):
+    model = Fornecedor
+    form_class = FornecedorForm
+    template_name = "update_fornecedor.html"
+    success_url = reverse_lazy("fornecedores")
+
+
+class DeleteFornecedorView(DeleteView):
+    model = Fornecedor
+    template_name = "fornecedor_confirm_delete.html"
+    success_url = reverse_lazy("fornecedores")
 
 class UpdateProdutoPageView(UpdateView):
     model = Produto

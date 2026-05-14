@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}
+Fornecedores - StockBot
+{% endblock %}
+
+{% block content %}
+
+<div class="space-y-8">
+
+    <!-- HEADER -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-sand-900">
+                Fornecedores
+            </h1>
+
+            <p class="mt-2 text-sm text-sand-500">
+                Gerencie todos os fornecedores cadastrados no sistema.
+            </p>
+        </div>
+
+        <!-- BUTTON -->
+        <a
+            href="{% url 'create_fornecedor' %}"
+            class="
+                inline-flex items-center gap-2
+                rounded-xl
+                bg-stone-700
+                px-5 py-3
+                text-sm font-medium text-white
+                shadow-sm
+                transition-all duration-200
+                hover:-translate-y-0.5
+                hover:bg-stone-800
+                hover:shadow-lg
+            "
+        >
+            <ion-icon
+                name="add"
+                class="text-lg"
+            ></ion-icon>
+
+            Novo Fornecedor
+        </a>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="
+        flex items-center gap-3
+        rounded-2xl
+        border border-sand-200
+        bg-white
+        px-4 py-3
+        shadow-sm
+        w-full lg:max-w-md
+    ">
+        <ion-icon
+            name="search"
+            class="text-lg text-sand-400"
+        ></ion-icon>
+
+        <input
+            type="text"
+            placeholder="Buscar fornecedor..."
+            class="
+                w-full
+                bg-transparent
+                text-sm
+                outline-none
+                placeholder:text-sand-400
+            "
+        >
+    </div>
+
+    <!-- TABLE -->
+    <div class="
+        overflow-hidden
+        rounded-3xl
+        border border-sand-100
+        bg-white
+        shadow-sm
+    ">
+
+        <table class="min-w-full divide-y divide-sand-100">
+
+            <!-- HEAD -->
+            <thead class="bg-sand-50">
+
+                <tr>
+
+                    <th class="
+                        px-6 py-4
+                        text-left text-xs font-semibold
+                        uppercase tracking-wider
+                        text-sand-500
+                    ">
+                        ID
+                    </th>
+
+                    <th class="
+                        px-6 py-4
+                        text-left text-xs font-semibold
+                        uppercase tracking-wider
+                        text-sand-500
+                    ">
+                        Nome
+                    </th>
+
+                    <th class="
+                        px-6 py-4
+                        text-left text-xs font-semibold
+                        uppercase tracking-wider
+                        text-sand-500
+                    ">
+                        Email
+                    </th>
+
+                    <th class="
+                        px-6 py-4
+                        text-left text-xs font-semibold
+                        uppercase tracking-wider
+                        text-sand-500
+                    ">
+                        Telefone
+                    </th>
+
+                    <th class="
+                        px-6 py-4
+                        text-right text-xs font-semibold
+                        uppercase tracking-wider
+                        text-sand-500
+                    ">
+                        Ações
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <!-- BODY -->
+            <tbody class="divide-y divide-sand-100">
+
+                {% for fornecedor in fornecedores %}
+
+                <tr class="hover:bg-sand-50 transition-colors">
+
+                    <!-- ID -->
+                    <td class="px-6 py-4 text-sm text-sand-600">
+                        #{{ fornecedor.pk|stringformat:"04d" }}
+                    </td>
+
+                    <!-- NAME -->
+                    <td class="px-6 py-4">
+
+                        <div class="font-medium text-sand-900">
+                            {{ fornecedor.nome }}
+                        </div>
+
+                    </td>
+
+                    <!-- EMAIL -->
+                    <td class="px-6 py-4 text-sm text-sand-600">
+                        {{ fornecedor.email }}
+                    </td>
+
+                    <!-- PHONE -->
+                    <td class="px-6 py-4 text-sm text-sand-600">
+                        {{ fornecedor.telefone }}
+                    </td>
+
+                    <!-- ACTIONS -->
+                    <td class="px-6 py-4">
+
+                        <div class="flex items-center justify-end gap-3">
+
+                            <!-- EDIT -->
+                            <a
+                                href="{% url 'update_fornecedor' fornecedor.pk %}"
+                                class="
+                                    inline-flex items-center gap-2
+                                    rounded-xl
+                                    border border-sand-200
+                                    bg-sand-50
+                                    px-4 py-2
+                                    text-sm font-medium
+                                    text-sand-700
+                                    transition-all
+                                    hover:bg-sand-100
+                                "
+                            >
+                                <ion-icon
+                                    name="create-outline"
+                                ></ion-icon>
+
+                                Editar
+                            </a>
+
+                            <!-- DELETE -->
+                            <a
+                                href="{% url 'delete_fornecedor' fornecedor.pk %}"
+                                class="
+                                    inline-flex items-center gap-2
+                                    rounded-xl
+                                    bg-red-500
+                                    px-4 py-2
+                                    text-sm font-medium
+                                    text-white
+                                    transition-all
+                                    hover:bg-red-600
+                                "
+                            >
+                                <ion-icon
+                                    name="trash-outline"
+                                ></ion-icon>
+
+                                Excluir
+                            </a>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="
+                            px-6 py-10
+                            text-center text-sm
+                            text-sand-500
+                        "
+                    >
+                        Nenhum fornecedor cadastrado.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -69,6 +69,11 @@
                     <span>Relatórios</span>
                 </a>
 
+                <a href="{% url 'fornecedores' %}" class="sidebar-link{% if nav_section == 'fornecedores' %} active{% endif %}">
+                    <ion-icon name="people" class="text-xl"></ion-icon>
+                    <span>Fornecedores</span>
+                </a>
+
                 <hr class="my-4 border-sand-100">
 
                 <a href="{% url 'configuracoes' %}" class="sidebar-link{% if nav_section == 'configuracoes' %} active{% endif %}">

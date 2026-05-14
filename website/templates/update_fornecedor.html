@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Fornecedor - StockBot{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <button onclick="window.history.back()" class="btn-icon">
+                    <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+                </button>
+                <h1 class="text-3xl font-bold text-sand-900">Editar Fornecedor</h1>
+            </div>
+            <p class="text-sand-600">Atualize os dados do fornecedor</p>
+        </div>
+    </div>
+
+    <div class="card p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label for="{{ form.nome.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="business" class="text-lg align-middle"></ion-icon>
+                    Nome do Fornecedor *
+                </label>
+                {{ form.nome }}
+                {% if form.nome.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.nome.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="mail" class="text-lg align-middle"></ion-icon>
+                    Email *
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.telefone.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="call" class="text-lg align-middle"></ion-icon>
+                    Telefone *
+                </label>
+                {{ form.telefone }}
+                {% if form.telefone.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.telefone.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.endereco.id_for_label }}" class="block text-sm font-medium text-sand-900 mb-2">
+                    <ion-icon name="location" class="text-lg align-middle"></ion-icon>
+                    Endereço *
+                </label>
+                {{ form.endereco }}
+                {% if form.endereco.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.endereco.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex gap-3 pt-6 border-t border-sand-100">
+                <button type="button" onclick="window.history.back()" class="btn-secondary flex-1">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary flex-1 flex items-center justify-center gap-2">
+                    <ion-icon name="checkmark-circle"></ion-icon>
+                    Salvar alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
