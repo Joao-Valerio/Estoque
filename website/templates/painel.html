@@ -214,7 +214,7 @@
             </h3>
             
             <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
-                {% for movimentacao in movimentacoes %}
+                {% for movimentacao in movimentacoes|slice:":5" %}
                 <div class="flex items-start gap-3 pb-3 border-b border-sand-100 last:border-b-0 last:pb-0">
                     {% if movimentacao.tipo == "E" %}
                     <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
