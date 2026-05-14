@@ -42,53 +42,213 @@ Produtos - StockBot
         </a>
 
     </div>
-    <!-- SEARCH + FILTER -->
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <!-- SEARCH -->
-        <div class="
-            flex items-center gap-3
-            rounded-2xl
-            border border-sand-200
-            bg-white
-            px-4 py-3
-            shadow-sm
-            w-full lg:max-w-md
-        ">
-            <ion-icon
-                name="search"
-                class="text-lg text-sand-400"
-            ></ion-icon>
-            <input
-                type="text"
-                placeholder="Buscar produto..."
+<!-- SEARCH + FILTER -->
+<div class="
+    rounded-3xl
+    border border-sand-200
+    bg-white/90
+    p-5
+    shadow-sm
+    backdrop-blur
+">
+
+    <form
+        method="get"
+        action=""
+        class="
+            flex flex-col gap-4
+            xl:flex-row
+            xl:items-center
+            xl:justify-between
+        "
+    >
+
+        <!-- LEFT -->
+        <div class="flex flex-1 flex-col gap-4 sm:flex-row">
+
+            <!-- SEARCH -->
+            <div class="
+                group
+                flex flex-1 items-center gap-3
+                rounded-2xl
+                border border-sand-200
+                bg-sand-50
+                px-4 py-3
+                transition-all duration-200
+                focus-within:border-stone-500
+                focus-within:bg-white
+                focus-within:shadow-md
+            ">
+
+                <div class="
+                    flex h-10 w-10 items-center justify-center
+                    rounded-xl
+                    bg-white
+                    text-sand-400
+                    shadow-sm
+                    transition-colors
+                    group-focus-within:text-stone-700
+                ">
+                    <ion-icon
+                        name="search"
+                        class="text-lg"
+                    ></ion-icon>
+                </div>
+
+                <div class="flex w-full flex-col">
+
+                    <label
+                        class="
+                            text-xs font-medium uppercase tracking-wide
+                            text-sand-500
+                        "
+                    >
+                        Buscar Produto
+                    </label>
+
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ busca_q }}"
+                        placeholder="Digite o nome do produto..."
+                        class="
+                            w-full
+                            bg-transparent
+                            text-sm text-sand-800
+                            outline-none
+                            placeholder:text-sand-400
+                        "
+                    >
+
+                </div>
+
+            </div>
+
+            <!-- CATEGORY -->
+            <div class="
+                flex items-center gap-3
+                rounded-2xl
+                border border-sand-200
+                bg-sand-50
+                px-4 py-3
+                transition-all duration-200
+                focus-within:border-stone-500
+                focus-within:bg-white
+                focus-within:shadow-md
+                sm:min-w-[260px]
+            ">
+
+                <div class="
+                    flex h-10 w-10 items-center justify-center
+                    rounded-xl
+                    bg-white
+                    text-sand-400
+                    shadow-sm
+                ">
+                    <ion-icon
+                        name="layers-outline"
+                        class="text-lg"
+                    ></ion-icon>
+                </div>
+
+                <div class="flex w-full flex-col">
+
+                    <label
+                        for="filtro-categoria-produtos"
+                        class="
+                            text-xs font-medium uppercase tracking-wide
+                            text-sand-500
+                        "
+                    >
+                        Categoria
+                    </label>
+
+                    <select
+                        id="filtro-categoria-produtos"
+                        name="categoria"
+                        class="
+                            w-full
+                            bg-transparent
+                            text-sm text-sand-800
+                            outline-none
+                        "
+                    >
+                        <option value="" {% if not categoria_atual %}selected{% endif %}>
+                            Todas as categorias
+                        </option>
+
+                        {% for cat in categorias %}
+
+                        <option
+                            value="{{ cat.pk }}"
+                            {% if categoria_atual == cat.pk %}selected{% endif %}
+                        >
+                            {{ cat.nome }}
+                        </option>
+
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="flex items-center gap-3">
+
+            <!-- SEARCH BUTTON -->
+            <button
+                type="submit"
                 class="
-                    w-full
-                    bg-transparent
-                    text-sm
-                    outline-none
-                    placeholder:text-sand-400
+                    inline-flex items-center gap-2
+                    rounded-2xl
+                    bg-stone-700
+                    px-6 py-4
+                    text-sm font-medium text-white
+                    shadow-sm
+                    transition-all duration-200
+                    hover:-translate-y-0.5
+                    hover:bg-stone-800
+                    hover:shadow-lg
                 "
             >
-        </div>
-        <!-- FILTER -->
-        <select class="
-            rounded-xl
-            border border-sand-200
-            bg-white
-            px-4 py-3
-            text-sm
-            shadow-sm
-            outline-none
-            transition-all
-            focus:border-stone-500
-        ">
-            <option>Todos</option>
-            <option>Eletrônicos</option>
-            <option>Escritório</option>
-            <option>Limpeza</option>
-        </select>
+                <ion-icon
+                    name="search"
+                    class="text-lg"
+                ></ion-icon>
 
-    </div>
+                Buscar
+            </button>
+
+            <!-- RESET -->
+            <a
+                href="{% url 'produtos' %}"
+                class="
+                    inline-flex items-center gap-2
+                    rounded-2xl
+                    border border-sand-200
+                    bg-white
+                    px-5 py-4
+                    text-sm font-medium text-sand-700
+                    transition-all duration-200
+                    hover:bg-sand-50
+                "
+            >
+                <ion-icon
+                    name="refresh-outline"
+                    class="text-lg"
+                ></ion-icon>
+
+                Limpar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
 
     <!-- PRODUCTS GRID -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -196,6 +356,12 @@ Produtos - StockBot
                     </button>
                 </div>
             </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full rounded-3xl border border-dashed border-sand-200 bg-white px-6 py-16 text-center">
+            <ion-icon name="cube-outline" class="mx-auto mb-4 text-5xl text-sand-300"></ion-icon>
+            <p class="text-lg font-medium text-sand-800">Nenhum produto encontrado</p>
+            <p class="mt-2 text-sm text-sand-500">Ajuste a busca ou o filtro de categoria.</p>
         </div>
         {% endfor %}
     </div>

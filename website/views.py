@@ -76,11 +76,24 @@ class ProdutosPageView(DashboardContextMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["produtos"] = (
-            Produto.objects
-            .select_related("categoria", "fornecedor")
-            .order_by("nome")
+        qs = (
+            Produto.objects.select_related("categoria", "fornecedor").order_by("nome")
         )
+
+        busca = self.request.GET.get("q", "").strip()
+        if busca:
+            qs = qs.filter(nome__icontains=busca)
+
+        categoria_raw = self.request.GET.get("categoria", "").strip()
+        categoria_atual = None
+        if categoria_raw.isdigit():
+            categoria_atual = int(categoria_raw)
+            qs = qs.filter(categoria_id=categoria_atual)
+
+        context["produtos"] = qs
+        context["categorias"] = Categoria.objects.order_by("nome")
+        context["busca_q"] = busca
+        context["categoria_atual"] = categoria_atual
 
         return context
 
