@@ -214,20 +214,18 @@
             </h3>
             
             <div class="space-y-3 max-h-80 overflow-y-auto">
-                {% for i in "12345" %}
+                {% for movimentacao in movimentacoes %}
                 <div class="flex items-start gap-3 pb-3 border-b border-sand-100 last:border-b-0 last:pb-0">
                     <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <ion-icon name="checkmark" class="text-lg text-green-600"></ion-icon>
-                    </div>
+                    </div>            
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-sand-900">Entrada de estoque</p>
-                        <p class="text-xs text-sand-600">Produto X - 50 unidades</p>
-                        <p class="text-xs text-sand-400 mt-1">Há {{ i }} hora{{ i|pluralize }}</p>
+                        <p class="text-sm font-medium text-sand-900">{{ movimentacao.tipo }}</p>
+                        <p class="text-xs text-sand-600">{{ movimentacao.produto.nome }} - {{ movimentacao.quantidade }} unidades</p>
+                        <p class="text-xs text-sand-400 mt-1">Há {{ movimentacao.data|timesince }} atrás</p>
                     </div>
                 </div>
                 {% endfor %}
-            </div>
-            
             <button class="btn-ghost w-full mt-4">Ver Mais Atividades</button>
         </div>
     </div>
