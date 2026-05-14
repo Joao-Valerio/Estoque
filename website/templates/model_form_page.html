@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_page_block_title }}{% endblock %}
+
+{% block content %}
+{% if form_variant == "hero" %}
+<div class="min-h-screen py-10 px-4">
+    <div class="max-w-3xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+                <button type="button" onclick="window.history.back()"
+                    class="w-11 h-11 rounded-xl bg-white shadow-md hover:shadow-lg transition flex items-center justify-center border border-sand-200 hover:bg-sand-50">
+                    <ion-icon name="chevron-back" class="text-2xl text-sand-700"></ion-icon>
+                </button>
+                <div>
+                    <h1 class="text-4xl font-bold text-sand-900">{{ form_page_title }}</h1>
+                    <p class="text-sand-500 mt-1">{{ form_page_subtitle }}</p>
+                </div>
+            </div>
+        </div>
+        {% include "components/forms.html" %}
+    </div>
+</div>
+{% elif form_variant == "delete" %}
+<div class="{{ form_outer_shell_class }}">
+    <div class="mb-8 flex items-center gap-3">
+        <button type="button" onclick="window.history.back()" class="btn-icon">
+            <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+        </button>
+        <div>
+            <h1 class="text-2xl font-bold text-sand-900">{{ form_page_title }}</h1>
+            {% if form_page_subtitle %}
+            <p class="text-sm text-sand-500 mt-1">{{ form_page_subtitle }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% include "components/forms.html" %}
+</div>
+{% else %}
+<div class="{{ form_outer_shell_class }}">
+    {% if form_header_style == "offset" %}
+    <div class="mb-8">
+        <div class="mb-2 flex items-center gap-3">
+            <button type="button" onclick="window.history.back()" class="btn-icon">
+                <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+            </button>
+            <h1 class="text-3xl font-bold text-sand-900">{{ form_page_title }}</h1>
+        </div>
+        <p class="ml-12 text-sand-600">{{ form_page_subtitle }}</p>
+    </div>
+    {% else %}
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-3 mb-2">
+                <button type="button" onclick="window.history.back()" class="btn-icon">
+                    <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+                </button>
+                <h1 class="text-3xl font-bold text-sand-900">{{ form_page_title }}</h1>
+            </div>
+            <p class="text-sand-600">{{ form_page_subtitle }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% include "components/forms.html" %}
+</div>
+{% endif %}
+{% endblock %}

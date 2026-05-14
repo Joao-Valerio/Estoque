@@ -1,5 +1,15 @@
 from django import forms
+from crispy_forms.helper import FormHelper
 
+from .crispy_layouts import (
+    attach_helper,
+    categoria_layout,
+    fornecedor_layout,
+    movimentacao_entrada_layout,
+    movimentacao_saida_layout,
+    produto_hero_layout,
+    produto_layout,
+)
 from .models import (
     Produto,
     Categoria,
@@ -8,8 +18,6 @@ from .models import (
 )
 
 
-# Classes utilitárias compartilhadas para padronizar o visual dos campos.
-# Usamos .input-field (definido em static/css/src/input.css) + utilitários Tailwind.
 INPUT_CLASSES = "input-field"
 TEXTAREA_CLASSES = "input-field h-24 resize-none"
 
@@ -62,6 +70,19 @@ class ProdutoForm(forms.ModelForm):
             "fornecedor": forms.Select(attrs={"class": INPUT_CLASSES}),
         }
 
+    def __init__(self, *args, submit_label="Criar Produto", **kwargs):
+        submit_extra_class = kwargs.pop("submit_extra_class", "")
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(
+            self.helper,
+            produto_layout(
+                submit_label=submit_label,
+                submit_extra_class=submit_extra_class,
+            ),
+        )
+
+
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
@@ -74,6 +95,11 @@ class CategoriaForm(forms.ModelForm):
                 attrs={"class": TEXTAREA_CLASSES, "placeholder": "Descrição da categoria..."}
             ),
         }
+
+    def __init__(self, *args, submit_label="Criar Categoria", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(self.helper, categoria_layout(submit_label=submit_label))
 
 
 class MovimentacaoEntradaForm(forms.ModelForm):
@@ -100,6 +126,13 @@ class MovimentacaoEntradaForm(forms.ModelForm):
                 }
             ),
         }
+
+    def __init__(self, *args, submit_label="Confirmar entrada", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(
+            self.helper, movimentacao_entrada_layout(submit_label=submit_label)
+        )
 
     def clean_quantidade(self):
         q = self.cleaned_data.get("quantidade")
@@ -144,6 +177,11 @@ class MovimentacaoSaidaForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, submit_label="Confirmar saída", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(self.helper, movimentacao_saida_layout(submit_label=submit_label))
+
     def clean_quantidade(self):
         q = self.cleaned_data.get("quantidade")
         if q is not None and q < 1:
@@ -176,16 +214,61 @@ class FornecedorForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, submit_label="Criar Fornecedor", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(self.helper, fornecedor_layout(submit_label=submit_label))
+
+
 class UpdateProdutoForm(forms.ModelForm):
     class Meta:
         model = Produto
-        fields = ["nome", "descricao", "preco", "quantidade", "quantidade_minima", "categoria", "fornecedor"]
+        fields = [
+            "nome",
+            "descricao",
+            "preco",
+            "quantidade",
+            "quantidade_minima",
+            "categoria",
+            "fornecedor",
+        ]
         widgets = {
-            "nome": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Ex.: Notebook Dell"}),
-            "descricao": forms.Textarea(attrs={"class": TEXTAREA_CLASSES, "placeholder": "Descrição do produto..."}),
-            "preco": forms.NumberInput(attrs={"class": f"{INPUT_CLASSES} text-base", "placeholder": "0.00", "step": "0.01", "min": "0", "inputmode": "decimal"}),
-            "quantidade": forms.NumberInput(attrs={"class": INPUT_CLASSES, "placeholder": "0", "min": "0", "inputmode": "numeric"}),
-            "quantidade_minima": forms.NumberInput(attrs={"class": INPUT_CLASSES, "placeholder": "15", "min": "0", "inputmode": "numeric"}),
+            "nome": forms.TextInput(
+                attrs={"class": INPUT_CLASSES, "placeholder": "Ex.: Notebook Dell"}
+            ),
+            "descricao": forms.Textarea(
+                attrs={"class": TEXTAREA_CLASSES, "placeholder": "Descrição do produto..."}
+            ),
+            "preco": forms.NumberInput(
+                attrs={
+                    "class": f"{INPUT_CLASSES} text-base",
+                    "placeholder": "0.00",
+                    "step": "0.01",
+                    "min": "0",
+                    "inputmode": "decimal",
+                }
+            ),
+            "quantidade": forms.NumberInput(
+                attrs={
+                    "class": INPUT_CLASSES,
+                    "placeholder": "0",
+                    "min": "0",
+                    "inputmode": "numeric",
+                }
+            ),
+            "quantidade_minima": forms.NumberInput(
+                attrs={
+                    "class": INPUT_CLASSES,
+                    "placeholder": "15",
+                    "min": "0",
+                    "inputmode": "numeric",
+                }
+            ),
             "categoria": forms.Select(attrs={"class": INPUT_CLASSES}),
             "fornecedor": forms.Select(attrs={"class": INPUT_CLASSES}),
         }
+
+    def __init__(self, *args, submit_label="Salvar Alterações", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(self.helper, produto_hero_layout(submit_label=submit_label))

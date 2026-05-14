@@ -26,6 +26,7 @@ from .models import (
     Movimentacao,
     Fornecedor,
 )
+from .mixins import DeleteConfirmPageMixin, ModelFormPageMixin
 
 class DashboardContextMixin:
 
@@ -148,17 +149,22 @@ class PainelPageView(DashboardContextMixin, TemplateView):
 class RelatoriosPageView(TemplateView):
     template_name = "relatorios.html"
 
-class CreateProdutoPageView(CreateView):
+class CreateProdutoPageView(ModelFormPageMixin, CreateView):
     model = Produto
     form_class = ProdutoForm
-    template_name = "create_produto.html"
     success_url = reverse_lazy("produtos")
+    form_page_block_title = "Novo Produto - StockBot"
+    form_page_title = "Novo Produto"
+    form_page_subtitle = "Cadastre um novo produto no sistema de estoque"
 
-class CreateCategoriaPageView(CreateView):
+
+class CreateCategoriaPageView(ModelFormPageMixin, CreateView):
     model = Categoria
     form_class = CategoriaForm
-    template_name = "create_categoria.html"
     success_url = reverse_lazy("painel")
+    form_page_block_title = "Nova Categoria - StockBot"
+    form_page_title = "Nova Categoria"
+    form_page_subtitle = "Organize seus produtos em categorias"
 
 class MovimentacoesPageView(ListView):
     model = Movimentacao
@@ -177,11 +183,17 @@ class MovimentacaoHubView(TemplateView):
     template_name = "movimentacao_hub.html"
 
 
-class CreateMovimentacaoEntradaView(CreateView):
+class CreateMovimentacaoEntradaView(ModelFormPageMixin, CreateView):
     model = Movimentacao
     form_class = MovimentacaoEntradaForm
-    template_name = "create_movimentacao_entrada.html"
     success_url = reverse_lazy("movimentacoes")
+    form_page_block_title = "Entrada de estoque - StockBot"
+    form_page_title = "Entrada de estoque"
+    form_page_subtitle = (
+        "Registre um pedido ao fornecedor e atualize a quantidade do produto."
+    )
+    form_header_style = "offset"
+    form_outer_shell_class = "mx-auto max-w-2xl"
 
     def form_valid(self, form):
         mov = form.save(commit=False)
@@ -199,11 +211,15 @@ class CreateMovimentacaoEntradaView(CreateView):
         return redirect(self.get_success_url())
 
 
-class CreateMovimentacaoSaidaView(CreateView):
+class CreateMovimentacaoSaidaView(ModelFormPageMixin, CreateView):
     model = Movimentacao
     form_class = MovimentacaoSaidaForm
-    template_name = "create_movimentacao_saida.html"
     success_url = reverse_lazy("movimentacoes")
+    form_page_block_title = "Saída de estoque - StockBot"
+    form_page_title = "Saída de estoque"
+    form_page_subtitle = "Registre uma venda ou saída informando o destinatário."
+    form_header_style = "offset"
+    form_outer_shell_class = "mx-auto max-w-2xl"
 
     def form_valid(self, form):
         mov = form.save(commit=False)
@@ -229,27 +245,39 @@ class CreateMovimentacaoSaidaView(CreateView):
             mov.save()
         return redirect(self.get_success_url())
 
-class CreateFornecedorPageView(CreateView):
+class CreateFornecedorPageView(ModelFormPageMixin, CreateView):
     model = Fornecedor
     form_class = FornecedorForm
-    template_name = "create_fornecedor.html"
     success_url = reverse_lazy("fornecedores")
+    form_page_block_title = "Novo Fornecedor - StockBot"
+    form_page_title = "Novo Fornecedor"
+    form_page_subtitle = "Cadastre um novo fornecedor"
 
 
-class UpdateFornecedorPageView(UpdateView):
+class UpdateFornecedorPageView(ModelFormPageMixin, UpdateView):
     model = Fornecedor
     form_class = FornecedorForm
-    template_name = "update_fornecedor.html"
     success_url = reverse_lazy("fornecedores")
+    form_submit_label = "Salvar alterações"
+    form_page_block_title = "Editar Fornecedor - StockBot"
+    form_page_title = "Editar Fornecedor"
+    form_page_subtitle = "Atualize os dados do fornecedor"
 
 
-class DeleteFornecedorView(DeleteView):
+class DeleteFornecedorView(DeleteConfirmPageMixin, DeleteView):
     model = Fornecedor
-    template_name = "fornecedor_confirm_delete.html"
     success_url = reverse_lazy("fornecedores")
+    form_page_block_title = "Excluir Fornecedor - StockBot"
+    form_page_title = "Excluir fornecedor"
+    form_page_subtitle = "Esta ação não pode ser desfeita."
+    form_delete_cancel_url = reverse_lazy("fornecedores")
 
-class UpdateProdutoPageView(UpdateView):
+
+class UpdateProdutoPageView(ModelFormPageMixin, UpdateView):
     model = Produto
     form_class = UpdateProdutoForm
-    template_name = "update_produto.html"
     success_url = reverse_lazy("produtos")
+    form_variant = "hero"
+    form_page_block_title = "Editar Produto - StockBot"
+    form_page_title = "Editar Produto"
+    form_page_subtitle = "Atualize as informações do produto"
