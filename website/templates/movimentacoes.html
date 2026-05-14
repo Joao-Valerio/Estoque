@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Movimentações - StockBot{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-sand-900">Movimentações</h1>
+            <p class="mt-2 text-sm text-sand-500">
+                Histórico de entradas (pedidos a fornecedores) e saídas (vendas).
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'movimentacao_hub' %}" class="btn-secondary inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium">
+                <ion-icon name="add-circle-outline" class="text-lg"></ion-icon>
+                Nova movimentação
+            </a>
+            <a href="{% url 'estoque' %}" class="inline-flex items-center gap-2 rounded-xl border border-sand-200 bg-white px-5 py-3 text-sm font-medium text-sand-700 shadow-sm transition hover:bg-sand-50">
+                <ion-icon name="layers" class="text-lg"></ion-icon>
+                Estoque
+            </a>
+        </div>
+    </div>
+
+    <div class="overflow-hidden rounded-3xl border border-sand-100 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-sand-100">
+                <thead class="bg-sand-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">Data</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">Tipo</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">Produto</th>
+                        <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-sand-500">Qtd</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">Fornecedor / Destinatário</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-sand-500">Obs.</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-sand-100">
+                    {% for m in movimentacoes %}
+                    <tr class="transition hover:bg-sand-50">
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-sand-600">
+                            {{ m.data|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if m.tipo == "E" %}
+                            <span class="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                                <ion-icon name="arrow-down-circle"></ion-icon>
+                                Entrada
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-800">
+                                <ion-icon name="arrow-up-circle"></ion-icon>
+                                Saída
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm font-medium text-sand-900">{{ m.produto.nome }}</td>
+                        <td class="px-6 py-4 text-right text-sm font-semibold text-sand-900">{{ m.quantidade }}</td>
+                        <td class="max-w-xs truncate px-6 py-4 text-sm text-sand-600">
+                            {% if m.tipo == "E" %}
+                                {% if m.fornecedor %}{{ m.fornecedor.nome }}{% else %}—{% endif %}
+                            {% else %}
+                                {{ m.destinatario|default:"—" }}
+                            {% endif %}
+                        </td>
+                        <td class="max-w-[12rem] truncate px-6 py-4 text-sm text-sand-500" title="{{ m.observacao|default:'' }}">
+                            {{ m.observacao|default:"—"|truncatechars:40 }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-14 text-center text-sm text-sand-500">
+                            Nenhuma movimentação registrada ainda.
+                            <a href="{% url 'movimentacao_hub' %}" class="ml-1 font-medium text-orange-600 hover:text-orange-700">Registrar a primeira</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if is_paginated %}
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-sand-100 px-6 py-4 text-sm text-sand-600">
+            <span>Página {{ page_obj.number }} de {{ paginator.num_pages }}</span>
+            <div class="flex gap-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="rounded-lg border border-sand-200 px-3 py-1.5 font-medium hover:bg-sand-50">Anterior</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="rounded-lg border border-sand-200 px-3 py-1.5 font-medium hover:bg-sand-50">Próxima</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

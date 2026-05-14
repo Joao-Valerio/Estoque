@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Nova movimentação - StockBot{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl space-y-8">
+    <div class="flex items-start gap-3">
+        <button type="button" onclick="window.history.back()" class="btn-icon shrink-0">
+            <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+        </button>
+        <div>
+            <h1 class="text-3xl font-bold text-sand-900">Nova movimentação</h1>
+            <p class="mt-2 text-sand-600">Escolha se o estoque entra (compra ao fornecedor) ou sai (venda ao destinatário).</p>
+        </div>
+    </div>
+
+    <div class="grid gap-6 sm:grid-cols-2">
+        <a href="{% url 'create_movimentacao_entrada' %}" class="group card flex flex-col gap-4 p-8 transition hover:shadow-lg">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 text-green-700 transition group-hover:bg-green-200">
+                <ion-icon name="arrow-down-circle" class="text-3xl"></ion-icon>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-sand-900">Entrada</h2>
+                <p class="mt-2 text-sm text-sand-600">Pedido ao fornecedor — aumenta a quantidade em estoque do produto.</p>
+            </div>
+            <span class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-green-700">
+                Registrar entrada
+                <ion-icon name="chevron-forward"></ion-icon>
+            </span>
+        </a>
+
+        <a href="{% url 'create_movimentacao_saida' %}" class="group card flex flex-col gap-4 p-8 transition hover:shadow-lg">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-700 transition group-hover:bg-orange-200">
+                <ion-icon name="arrow-up-circle" class="text-3xl"></ion-icon>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-sand-900">Saída</h2>
+                <p class="mt-2 text-sm text-sand-600">Venda ao destinatário — reduz o estoque (valida quantidade disponível).</p>
+            </div>
+            <span class="mt-auto inline-flex items-center gap-1 text-sm font-medium text-orange-700">
+                Registrar saída
+                <ion-icon name="chevron-forward"></ion-icon>
+            </span>
+        </a>
+    </div>
+
+    <p class="text-center text-sm text-sand-500">
+        <a href="{% url 'movimentacoes' %}" class="font-medium text-stone-700 hover:underline">Ver histórico de movimentações</a>
+    </p>
+</div>
+{% endblock %}

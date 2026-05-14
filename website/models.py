@@ -55,14 +55,14 @@ class Produto(models.Model):
 class Movimentacao(models.Model):
 
     TIPOS = (
-        ('E', 'Entrada'),
-        ('S', 'Saída'),
+        ("E", "Entrada"),
+        ("S", "Saída"),
     )
 
     produto = models.ForeignKey(
         Produto,
         on_delete=models.CASCADE,
-        related_name='movimentacoes'
+        related_name="movimentacoes",
     )
 
     tipo = models.CharField(max_length=1, choices=TIPOS)
@@ -73,5 +73,21 @@ class Movimentacao(models.Model):
 
     observacao = models.TextField(blank=True, null=True)
 
+    fornecedor = models.ForeignKey(
+        Fornecedor,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="movimentacoes_entrada",
+        verbose_name="Fornecedor",
+    )
+
+    destinatario = models.CharField(
+        "Destinatário",
+        max_length=200,
+        blank=True,
+        default="",
+    )
+
     def __str__(self):
-        return f'{self.produto.nome} - {self.get_tipo_display()}'
+        return f"{self.produto.nome} - {self.get_tipo_display()}"

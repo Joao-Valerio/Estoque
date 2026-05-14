@@ -21,7 +21,49 @@
         </div>
 
         <!-- ACTIONS -->
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center justify-end gap-3">
+
+            <a href="{% url 'create_movimentacao_entrada' %}" class="
+                    inline-flex items-center gap-2
+                    rounded-xl
+                    border border-green-200 bg-green-50
+                    px-5 py-3
+                    text-sm font-medium text-green-800
+                    shadow-sm
+                    transition-all
+                    hover:bg-green-100
+                ">
+                <ion-icon name="arrow-down-circle" class="text-lg"></ion-icon>
+                Entrada (fornecedor)
+            </a>
+
+            <a href="{% url 'create_movimentacao_saida' %}" class="
+                    inline-flex items-center gap-2
+                    rounded-xl
+                    border border-orange-200 bg-orange-50
+                    px-5 py-3
+                    text-sm font-medium text-orange-800
+                    shadow-sm
+                    transition-all
+                    hover:bg-orange-100
+                ">
+                <ion-icon name="arrow-up-circle" class="text-lg"></ion-icon>
+                Saída (venda)
+            </a>
+
+            <a href="{% url 'movimentacoes' %}" class="
+                    inline-flex items-center gap-2
+                    rounded-xl
+                    border border-sand-200 bg-white
+                    px-5 py-3
+                    text-sm font-medium text-sand-700
+                    shadow-sm
+                    transition-all
+                    hover:bg-sand-50
+                ">
+                <ion-icon name="list" class="text-lg"></ion-icon>
+                Histórico
+            </a>
 
             <a href="{% url 'create_produto' %}" class="
                     inline-flex items-center gap-2
@@ -34,11 +76,8 @@
                     hover:bg-stone-800
                     btn-primary
                 ">
-
-                <ion-icon name="add" class="text-lg "></ion-icon>
-
+                <ion-icon name="add" class="text-lg"></ion-icon>
                 Novo Produto
-
             </a>
 
         </div>
@@ -166,7 +205,7 @@
                     </p>
 
                     <h2 class="text-3xl font-bold text-sand-900">
-                        58
+                        {{ movimentacoes_count|default:"0" }}
                     </h2>
 
                 </div>

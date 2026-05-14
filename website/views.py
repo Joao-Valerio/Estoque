@@ -1,14 +1,22 @@
 from decimal import Decimal
 
+from django.db import transaction
 from django.db.models import F, Sum
-from django.db.models.functions import Coalesce
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
+from django.views.generic import (
+    TemplateView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+    ListView,
+)
 
 from .forms import (
     ProdutoForm,
     CategoriaForm,
-    MovimentacaoForm,
+    MovimentacaoEntradaForm,
+    MovimentacaoSaidaForm,
     FornecedorForm,
     UpdateProdutoForm,
 )
@@ -92,6 +100,7 @@ class EstoquePageView(DashboardContextMixin, TemplateView):
                 "nome"
             )
         )
+        context["movimentacoes_count"] = Movimentacao.objects.count()
         return context
 
 
@@ -138,11 +147,74 @@ class CreateCategoriaPageView(CreateView):
     template_name = "create_categoria.html"
     success_url = reverse_lazy("painel")
 
-class CreateMovimentacaoPageView(CreateView):
+class MovimentacoesPageView(ListView):
     model = Movimentacao
-    form_class = MovimentacaoForm
-    template_name = "create_movimentacao.html"
-    success_url = reverse_lazy("painel")
+    template_name = "movimentacoes.html"
+    context_object_name = "movimentacoes"
+    paginate_by = 25
+
+    def get_queryset(self):
+        return (
+            Movimentacao.objects.select_related("produto", "fornecedor")
+            .order_by("-data")
+        )
+
+
+class MovimentacaoHubView(TemplateView):
+    template_name = "movimentacao_hub.html"
+
+
+class CreateMovimentacaoEntradaView(CreateView):
+    model = Movimentacao
+    form_class = MovimentacaoEntradaForm
+    template_name = "create_movimentacao_entrada.html"
+    success_url = reverse_lazy("movimentacoes")
+
+    def form_valid(self, form):
+        mov = form.save(commit=False)
+        mov.tipo = "E"
+        mov.destinatario = ""
+        qty = mov.quantidade
+        with transaction.atomic():
+            updated = Produto.objects.filter(pk=mov.produto_id).update(
+                quantidade=F("quantidade") + qty
+            )
+            if not updated:
+                form.add_error(None, "Produto não encontrado.")
+                return self.form_invalid(form)
+            mov.save()
+        return redirect(self.get_success_url())
+
+
+class CreateMovimentacaoSaidaView(CreateView):
+    model = Movimentacao
+    form_class = MovimentacaoSaidaForm
+    template_name = "create_movimentacao_saida.html"
+    success_url = reverse_lazy("movimentacoes")
+
+    def form_valid(self, form):
+        mov = form.save(commit=False)
+        mov.tipo = "S"
+        mov.fornecedor = None
+        qty = mov.quantidade
+        with transaction.atomic():
+            prod = (
+                Produto.objects.select_for_update()
+                .filter(pk=mov.produto_id)
+                .first()
+            )
+            if prod is None:
+                form.add_error(None, "Produto não encontrado.")
+                return self.form_invalid(form)
+            if prod.quantidade < qty:
+                form.add_error(
+                    "quantidade",
+                    f"Estoque insuficiente. Disponível: {prod.quantidade}.",
+                )
+                return self.form_invalid(form)
+            Produto.objects.filter(pk=prod.pk).update(quantidade=F("quantidade") - qty)
+            mov.save()
+        return redirect(self.get_success_url())
 
 class CreateFornecedorPageView(CreateView):
     model = Fornecedor

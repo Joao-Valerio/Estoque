@@ -64,6 +64,11 @@
                     <span>Estoque</span>
                 </a>
 
+                <a href="{% url 'movimentacoes' %}" class="sidebar-link{% if nav_section == 'movimentacoes' %} active{% endif %}">
+                    <ion-icon name="swap-horizontal" class="text-xl"></ion-icon>
+                    <span>Movimentações</span>
+                </a>
+
                 <a href="{% url 'relatorios' %}" class="sidebar-link{% if nav_section == 'relatorios' %} active{% endif %}">
                     <ion-icon name="bar-chart" class="text-xl"></ion-icon>
                     <span>Relatórios</span>

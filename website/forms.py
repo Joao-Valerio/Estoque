@@ -76,20 +76,85 @@ class CategoriaForm(forms.ModelForm):
         }
 
 
-class MovimentacaoForm(forms.ModelForm):
+class MovimentacaoEntradaForm(forms.ModelForm):
+    """Entrada de estoque (ex.: pedido ao fornecedor)."""
+
     class Meta:
         model = Movimentacao
-        fields = ["produto", "tipo", "quantidade", "observacao"]
+        fields = ["produto", "fornecedor", "quantidade", "observacao"]
         widgets = {
             "produto": forms.Select(attrs={"class": INPUT_CLASSES}),
-            "tipo": forms.Select(attrs={"class": INPUT_CLASSES}),
+            "fornecedor": forms.Select(attrs={"class": INPUT_CLASSES}),
             "quantidade": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES, "placeholder": "0"}
+                attrs={
+                    "class": INPUT_CLASSES,
+                    "placeholder": "0",
+                    "min": "1",
+                    "inputmode": "numeric",
+                }
             ),
             "observacao": forms.Textarea(
-                attrs={"class": TEXTAREA_CLASSES, "placeholder": "Observações..."}
+                attrs={
+                    "class": TEXTAREA_CLASSES,
+                    "placeholder": "Nº do pedido, nota fiscal, etc.",
+                }
             ),
         }
+
+    def clean_quantidade(self):
+        q = self.cleaned_data.get("quantidade")
+        if q is not None and q < 1:
+            raise forms.ValidationError("Informe uma quantidade maior ou igual a 1.")
+        return q
+
+    def clean_fornecedor(self):
+        fornecedor = self.cleaned_data.get("fornecedor")
+        if not fornecedor:
+            raise forms.ValidationError("Selecione o fornecedor do pedido.")
+        return fornecedor
+
+
+class MovimentacaoSaidaForm(forms.ModelForm):
+    """Saída de estoque (ex.: venda a um destinatário)."""
+
+    class Meta:
+        model = Movimentacao
+        fields = ["produto", "destinatario", "quantidade", "observacao"]
+        widgets = {
+            "produto": forms.Select(attrs={"class": INPUT_CLASSES}),
+            "destinatario": forms.TextInput(
+                attrs={
+                    "class": INPUT_CLASSES,
+                    "placeholder": "Nome do cliente ou destinatário",
+                }
+            ),
+            "quantidade": forms.NumberInput(
+                attrs={
+                    "class": INPUT_CLASSES,
+                    "placeholder": "0",
+                    "min": "1",
+                    "inputmode": "numeric",
+                }
+            ),
+            "observacao": forms.Textarea(
+                attrs={
+                    "class": TEXTAREA_CLASSES,
+                    "placeholder": "Observações da venda (opcional)",
+                }
+            ),
+        }
+
+    def clean_quantidade(self):
+        q = self.cleaned_data.get("quantidade")
+        if q is not None and q < 1:
+            raise forms.ValidationError("Informe uma quantidade maior ou igual a 1.")
+        return q
+
+    def clean_destinatario(self):
+        nome = (self.cleaned_data.get("destinatario") or "").strip()
+        if not nome:
+            raise forms.ValidationError("Informe o destinatário da venda.")
+        return nome
 
 
 class FornecedorForm(forms.ModelForm):
