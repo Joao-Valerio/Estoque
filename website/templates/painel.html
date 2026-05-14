@@ -22,12 +22,12 @@
     </div>
     <!-- Stock Status Filter -->
     <div>
-        <label class="block text-sm font-medium text-sand-700 mb-2">Status do Estoque</label>
-        <select class="input-field">
+        <label for="filtro-status-estoque" class="block text-sm font-medium text-sand-700 mb-2">Status do Estoque</label>
+        <select id="filtro-status-estoque" name="status" class="input-field">
             <option value="">Todos os status</option>
-            <option value="ok">Em Estoque</option>
-            <option value="low">Estoque Baixo</option>
-            <option value="out">Sem Estoque</option>
+            {% for st in estoque_status_opcoes %}
+            <option value="{{ st.value }}">{{ st.label }}</option>
+            {% endfor %}
         </select>
     </div>
 

@@ -24,17 +24,19 @@
     <div>
         <label class="block text-sm font-medium text-sand-700 mb-2">Categoria</label>
         <select class="input-field">
-            <option value="">Todas</option>
-            <option>Eletrônicos</option>
-            <option>Alimentos</option>
+            <option value="">Todas as categorias</option>
+            {% for cat in categorias %}
+            <option value="{{ cat.pk }}">{{ cat.nome }}</option>
+            {% endfor %}
         </select>
     </div>
     <div>
-        <label class="block text-sm font-medium text-sand-700 mb-2">Tipo</label>
-        <select class="input-field">
+        <label for="filtro-tipo-movimentacao" class="block text-sm font-medium text-sand-700 mb-2">Tipo</label>
+        <select id="filtro-tipo-movimentacao" name="tipo" class="input-field">
             <option value="">Todos</option>
-            <option>Entrada</option>
-            <option>Saída</option>
+            {% for tipo in tipos %}
+            <option value="{{ tipo.id }}">{{ tipo.nome }}</option>
+            {% endfor %}
         </select>
     </div>
     <div class="flex items-end">

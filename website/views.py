@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from django.db import transaction
-from django.db.models import F, Sum
+from django.db.models import Case, CharField, F, Sum, Value, When
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -27,6 +27,48 @@ from .models import (
     Fornecedor,
 )
 from .mixins import DeleteConfirmPageMixin, ModelFormPageMixin
+
+
+def _estoque_status_opcoes_do_banco():
+    """
+    Slugs de status presentes nos produtos (regra: qtd = sem estoque;
+    0 < qtd <= mínimo = baixo; senão = ok). Se não houver produtos, lista os três.
+    """
+    labels = {
+        "ok": "Em Estoque",
+        "low": "Estoque Baixo",
+        "out": "Sem Estoque",
+    }
+    order = ("ok", "low", "out")
+    slugs = set(
+        Produto.objects.annotate(
+            status_slug=Case(
+                When(quantidade=0, then=Value("out")),
+                When(quantidade__lte=F("quantidade_minima"), then=Value("low")),
+                default=Value("ok"),
+                output_field=CharField(),
+            )
+        ).values_list("status_slug", flat=True)
+    )
+    if not slugs:
+        slugs = set(order)
+    return [{"value": s, "label": labels[s]} for s in order if s in slugs]
+
+
+def _movimentacao_tipos_relatorio():
+    """
+    Entrada (E) e Saída (S) a partir de Movimentacao no banco.
+    Sem registros: lista as duas opções do modelo (TIPOS).
+    """
+    labels = dict(Movimentacao.TIPOS)
+    order = ("E", "S")
+    found = set(
+        Movimentacao.objects.values_list("tipo", flat=True).distinct()
+    )
+    if not found:
+        found = set(order)
+    return [{"id": code, "nome": labels[code]} for code in order if code in found]
+
 
 class DashboardContextMixin:
 
@@ -144,10 +186,18 @@ class PainelPageView(DashboardContextMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["categorias"] = Categoria.objects.order_by("nome")
+        context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco()
         return context
 
 class RelatoriosPageView(TemplateView):
     template_name = "relatorios.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["categorias"] = Categoria.objects.order_by("nome")
+        context["tipos"] = _movimentacao_tipos_relatorio()
+        return context
+
 
 class CreateProdutoPageView(ModelFormPageMixin, CreateView):
     model = Produto
