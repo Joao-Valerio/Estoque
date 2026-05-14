@@ -187,6 +187,10 @@ class PainelPageView(DashboardContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["categorias"] = Categoria.objects.order_by("nome")
         context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco()
+        context["movimentacoes"] = (
+            Movimentacao.objects.select_related("produto", "fornecedor")
+            .order_by("-data")[:15]
+        )
         return context
 
 class RelatoriosPageView(TemplateView):

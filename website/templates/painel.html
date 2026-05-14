@@ -213,20 +213,34 @@
                 Atividades Recentes
             </h3>
             
-            <div class="space-y-3 max-h-80 overflow-y-auto">
+            <div class="space-y-3 max-h-80 overflow-y-auto pr-1">
                 {% for movimentacao in movimentacoes %}
                 <div class="flex items-start gap-3 pb-3 border-b border-sand-100 last:border-b-0 last:pb-0">
+                    {% if movimentacao.tipo == "E" %}
                     <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <ion-icon name="checkmark" class="text-lg text-green-600"></ion-icon>
-                    </div>            
+                        <ion-icon name="arrow-down-circle" class="text-lg text-green-600"></ion-icon>
+                    </div>
+                    {% else %}
+                    <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <ion-icon name="arrow-up-circle" class="text-lg text-orange-600"></ion-icon>
+                    </div>
+                    {% endif %}
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-sand-900">{{ movimentacao.tipo }}</p>
-                        <p class="text-xs text-sand-600">{{ movimentacao.produto.nome }} - {{ movimentacao.quantidade }} unidades</p>
-                        <p class="text-xs text-sand-400 mt-1">Há {{ movimentacao.data|timesince }} atrás</p>
+                        <p class="text-sm font-medium text-sand-900">{{ movimentacao.get_tipo_display }}</p>
+                        <p class="text-xs text-sand-600">{{ movimentacao.produto.nome }} — {{ movimentacao.quantidade }} un.</p>
+                        {% if movimentacao.tipo == "E" and movimentacao.fornecedor %}
+                        <p class="text-xs text-sand-500 mt-0.5">Fornecedor: {{ movimentacao.fornecedor.nome }}</p>
+                        {% elif movimentacao.tipo == "S" and movimentacao.destinatario %}
+                        <p class="text-xs text-sand-500 mt-0.5">Destinatário: {{ movimentacao.destinatario }}</p>
+                        {% endif %}
+                        <p class="text-xs text-sand-400 mt-1">{{ movimentacao.data|date:"d/m/Y H:i" }}</p>
                     </div>
                 </div>
+                {% empty %}
+                <p class="text-sm text-sand-500 py-4 text-center">Nenhuma movimentação registrada ainda.</p>
                 {% endfor %}
-            <button class="btn-ghost w-full mt-4">Ver Mais Atividades</button>
+            </div>
+            <a href="{% url 'movimentacoes' %}" class="btn-ghost mt-4 block w-full text-center">Ver todas as movimentações</a>
         </div>
     </div>
 </div>
