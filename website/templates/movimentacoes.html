@@ -13,7 +13,17 @@
             </p>
         </div>
         <div class="flex flex-wrap gap-3">
-            <a href="{% url 'movimentacao_hub' %}" class="btn-secondary inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium">
+            <a href="{% url 'movimentacao_hub' %}" class="
+            inline-flex items-center gap-2
+            rounded-xl
+            bg-stone-700
+            px-5 py-3
+            text-sm font-medium text-white
+            shadow-sm
+            transition-all duration-200
+            hover:-translate-y-0.5
+            hover:bg-stone-800
+            hover:shadow-lg">
                 <ion-icon name="add-circle-outline" class="text-lg"></ion-icon>
                 Nova movimentação
             </a>
