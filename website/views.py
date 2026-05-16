@@ -79,6 +79,40 @@ def _movimentacao_tipos_relatorio():
     return [{"id": code, "nome": labels[code]} for code in order if code in found]
 
 
+def _categoria_distribuicao_estoque():
+    """
+    Distribuição do valor em estoque por categoria (Σ quantidade × preço unitário).
+    Retorna dict com labels, values (float) e flag placeholder quando não há dados.
+    """
+    rows = (
+        Produto.objects.values("categoria__nome")
+        .annotate(
+            total_valor=Sum(
+                ExpressionWrapper(
+                    F("quantidade") * F("preco"),
+                    output_field=DecimalField(max_digits=16, decimal_places=2),
+                )
+            )
+        )
+        .order_by("categoria__nome")
+    )
+    labels = []
+    values = []
+    for r in rows:
+        nome = r["categoria__nome"] or "Sem nome"
+        v = r["total_valor"] or Decimal("0")
+        if v > 0:
+            labels.append(nome)
+            values.append(float(v))
+    if not labels:
+        return {
+            "labels": ["Sem valor em estoque"],
+            "values": [1.0],
+            "placeholder": True,
+        }
+    return {"labels": labels, "values": values, "placeholder": False}
+
+
 class DashboardContextMixin:
 
     def get_dashboard_context(self):
@@ -220,6 +254,7 @@ class RelatoriosPageView(TemplateView):
             .order_by("-data")[:15]
         )
         context["movimentacoes_total"] = Movimentacao.objects.count()
+        context["categoria_distribuicao"] = _categoria_distribuicao_estoque()
         return context
 
 
