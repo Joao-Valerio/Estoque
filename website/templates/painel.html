@@ -3,43 +3,6 @@
 {% block title %}Dashboard - StockBot{% endblock %}
 
 {% block content %}
-<!-- Filters Section -->
-<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-    <!-- Category Filter -->
-    <div>
-        <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <label for="filtro-categoria" class="block text-sm font-medium text-sand-700">Filtrar por Categoria</label>
-            <a href="{% url 'create_categoria' %}" class="text-sm font-medium text-orange-600 hover:text-orange-700 whitespace-nowrap">
-                + Nova categoria
-            </a>
-        </div>
-        <select id="filtro-categoria" name="categoria" class="input-field">
-            <option value="">Todas as categorias</option>
-            {% for cat in categorias %}
-            <option value="{{ cat.pk }}">{{ cat.nome }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <!-- Stock Status Filter -->
-    <div>
-        <label for="filtro-status-estoque" class="block text-sm font-medium text-sand-700 mb-2">Status do Estoque</label>
-        <select id="filtro-status-estoque" name="status" class="input-field">
-            <option value="">Todos os status</option>
-            {% for st in estoque_status_opcoes %}
-            <option value="{{ st.value }}">{{ st.label }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <!-- Search -->
-    <div>
-        <label class="block text-sm font-medium text-sand-700 mb-2">Buscar Produto</label>
-        <div class="relative">
-            <ion-icon name="search" class="absolute left-3 top-3 text-sand-400 text-lg"></ion-icon>
-            <input type="text" placeholder="Nome do produto..." class="input-field pl-10">
-        </div>
-    </div>
-</div>
 
 <!-- Summary Cards -->
 <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5 animate-fade-in">
