@@ -1,7 +1,16 @@
 from decimal import Decimal
 
 from django.db import transaction
-from django.db.models import Case, CharField, F, Sum, Value, When
+from django.db.models import (
+    Case,
+    CharField,
+    DecimalField,
+    ExpressionWrapper,
+    F,
+    Sum,
+    Value,
+    When,
+)
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -200,6 +209,17 @@ class RelatoriosPageView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["categorias"] = Categoria.objects.order_by("nome")
         context["tipos"] = _movimentacao_tipos_relatorio()
+        context["movimentacoes"] = (
+            Movimentacao.objects.select_related("produto", "fornecedor")
+            .annotate(
+                valor_mov=ExpressionWrapper(
+                    F("quantidade") * F("produto__preco"),
+                    output_field=DecimalField(max_digits=14, decimal_places=2),
+                )
+            )
+            .order_by("-data")[:15]
+        )
+        context["movimentacoes_total"] = Movimentacao.objects.count()
         return context
 
 
