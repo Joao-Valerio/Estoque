@@ -14,7 +14,7 @@ def navigation(request):
         section = "painel"
     elif name in ("produtos", "create_produto", "create_categoria"):
         section = "produtos"
-    elif name in ("estoque", "create_estoque"):
+    elif name in ("estoque",):
         section = "estoque"
     elif name in (
         "movimentacoes",

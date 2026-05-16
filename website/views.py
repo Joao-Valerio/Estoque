@@ -36,6 +36,7 @@ from .models import (
     Fornecedor,
 )
 from .mixins import DeleteConfirmPageMixin, ModelFormPageMixin
+from .formatting import formatar_brl
 
 
 def _estoque_status_opcoes_do_banco():
@@ -113,6 +114,22 @@ def _categoria_distribuicao_estoque():
     return {"labels": labels, "values": values, "placeholder": False}
 
 
+def _movimentacoes_recentes(limit=15, *, annotate_valor_mov=False):
+    """
+    Últimas movimentações (produto/fornecedor em join).
+    Com annotate_valor_mov=True, acrescenta quantidade × preço unitário atual.
+    """
+    qs = Movimentacao.objects.select_related("produto", "fornecedor")
+    if annotate_valor_mov:
+        qs = qs.annotate(
+            valor_mov=ExpressionWrapper(
+                F("quantidade") * F("produto__preco"),
+                output_field=DecimalField(max_digits=14, decimal_places=2),
+            )
+        )
+    return qs.order_by("-data")[:limit]
+
+
 class DashboardContextMixin:
 
     def get_dashboard_context(self):
@@ -133,6 +150,7 @@ class DashboardContextMixin:
             quantidade__gt=0
         )
 
+        vt = total or Decimal("0")
         return {
             "produtos_count": Produto.objects.count(),
 
@@ -148,7 +166,8 @@ class DashboardContextMixin:
 
             "em_estoque": em_estoque,
 
-            "valor_total": total or Decimal("0"),
+            "valor_total": vt,
+            "valor_total_brl": formatar_brl(vt),
         }
 
     def get_context_data(self, **kwargs):
@@ -156,7 +175,8 @@ class DashboardContextMixin:
         context.update(self.get_dashboard_context())
         return context
 
-class ProdutosPageView(DashboardContextMixin, TemplateView):
+
+class ProdutosPageView(TemplateView):
     template_name = "produtos.html"
 
     def get_context_data(self, **kwargs):
@@ -203,9 +223,6 @@ class EstoquePageView(DashboardContextMixin, TemplateView):
         return context
 
 
-class RelatorioPageView(TemplateView):
-    template_name = "relatorio.html"
-
 class FornecedoresPageView(TemplateView):
     template_name = "fornecedores.html"
 
@@ -230,10 +247,7 @@ class PainelPageView(DashboardContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["categorias"] = Categoria.objects.order_by("nome")
         context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco()
-        context["movimentacoes"] = (
-            Movimentacao.objects.select_related("produto", "fornecedor")
-            .order_by("-data")[:15]
-        )
+        context["movimentacoes"] = _movimentacoes_recentes(15)
         return context
 
 class RelatoriosPageView(TemplateView):
@@ -243,15 +257,8 @@ class RelatoriosPageView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["categorias"] = Categoria.objects.order_by("nome")
         context["tipos"] = _movimentacao_tipos_relatorio()
-        context["movimentacoes"] = (
-            Movimentacao.objects.select_related("produto", "fornecedor")
-            .annotate(
-                valor_mov=ExpressionWrapper(
-                    F("quantidade") * F("produto__preco"),
-                    output_field=DecimalField(max_digits=14, decimal_places=2),
-                )
-            )
-            .order_by("-data")[:15]
+        context["movimentacoes"] = _movimentacoes_recentes(
+            15, annotate_valor_mov=True
         )
         context["movimentacoes_total"] = Movimentacao.objects.count()
         context["categoria_distribuicao"] = _categoria_distribuicao_estoque()
