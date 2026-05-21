@@ -18,28 +18,36 @@ Produtos - StockBot
                 Gerencie todos os produtos cadastrados no sistema.
             </p>
         </div>
-        <!-- ACTION BUTTON -->
-        <a
-            href="{% url 'create_produto' %}"
-            class="btn-primary
-                inline-flex items-center gap-2
-                rounded-xl
-                bg-stone-700
-                px-5 py-3
-                text-sm font-medium text-white
-                shadow-sm
-                transition-all duration-200
-                hover:-translate-y-0.5
-                hover:bg-stone-800
-                hover:shadow-lg
-            "
-        >
-            <ion-icon
-                name="add"
-                class="text-lg"
-            ></ion-icon>
-            Novo Produto
-        </a>
+        <div class="flex flex-wrap items-center gap-2">
+            <a
+                href="{% url 'create_produto' %}"
+                class="btn-primary
+                    inline-flex items-center gap-2
+                    rounded-xl
+                    bg-stone-700
+                    px-5 py-3
+                    text-sm font-medium text-white
+                    shadow-sm
+                    transition-all duration-200
+                    hover:-translate-y-0.5
+                    hover:bg-stone-800
+                    hover:shadow-lg
+                "
+            >
+                <ion-icon
+                    name="add"
+                    class="text-lg"
+                ></ion-icon>
+                Novo Produto
+            </a>
+            <a href="{% url 'create_categoria' %}" class="btn-secondary">
+                <ion-icon
+                    name="layers-outline"
+                    class="text-lg"
+                ></ion-icon>
+                Categorias
+            </a>
+        </div>
 
     </div>
 <!-- SEARCH + FILTER -->
