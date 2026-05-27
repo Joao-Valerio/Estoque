@@ -22,7 +22,12 @@
         </select>
     </div>
     <div>
-        <label class="block text-sm font-medium text-sand-700 mb-2">Categoria</label>
+        <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm font-medium text-sand-700 mb-2">Categoria</label>
+            <a href="{% url 'create_categoria' %}?next={{ request.path }}" class="text-sm text-stone-600 hover:text-stone-800 font-semibold">
+                + Criar Nova
+            </a>    
+        </div>
         <select class="input-field">
             <option value="">Todas as categorias</option>
             {% for cat in categorias %}

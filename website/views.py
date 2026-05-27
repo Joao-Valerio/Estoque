@@ -276,7 +276,7 @@ class CreateProdutoPageView(ModelFormPageMixin, CreateView):
 class CreateCategoriaPageView(ModelFormPageMixin, CreateView):
     model = Categoria
     form_class = CategoriaForm
-    success_url = reverse_lazy("painel")
+    success_url = reverse_lazy("relatorios")
     form_page_block_title = "Nova Categoria - StockBot"
     form_page_title = "Nova Categoria"
     form_page_subtitle = "Organize seus produtos em categorias"
