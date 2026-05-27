@@ -213,11 +213,15 @@ class EstoquePageView(DashboardContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["produtos"] = (
-            Produto.objects.select_related("categoria", "fornecedor").order_by(
-                "nome"
-            )
-        )
+        qs = Produto.objects.select_related("categoria", "fornecedor").order_by("nome")
+        busca = self.request.GET.get("q", "").strip()
+        if busca:
+            filtros = Q(nome__icontains=busca)
+            if busca.isdigit():
+                filtros |= Q(pk=int(busca))
+            qs = qs.filter(filtros)
+        context["produtos"] = qs
+        context["busca_q"] = busca
         context["movimentacoes_count"] = Movimentacao.objects.count()
         return context
 

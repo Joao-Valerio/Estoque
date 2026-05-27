@@ -271,21 +271,48 @@
 
             </div>
 
-            <!-- SEARCH -->
-            <div class="flex items-center gap-2 rounded-xl border border-sand-100 bg-sand-50 px-4 py-2">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <!-- SEARCH -->
+                <form method="get" class="flex items-center gap-2 rounded-xl border border-sand-100 bg-sand-50 px-4 py-2">
 
-                <ion-icon name="search" class="text-sand-500"></ion-icon>
+                    <ion-icon name="search" class="text-sand-500"></ion-icon>
 
-                <input type="text" placeholder="Buscar produto..." class="
-                        w-52
-                        bg-transparent
-                        text-sm
-                        outline-none
-                        placeholder-sand-400
-                    ">
+                    <input
+                        type="search"
+                        name="q"
+                        value="{{ busca_q }}"
+                        placeholder="Nome ou ID do produto..."
+                        class="
+                            w-52
+                            bg-transparent
+                            text-sm
+                            outline-none
+                            placeholder-sand-400
+                        "
+                    >
 
+                </form>
+                <a
+                    href="{% url 'estoque' %}"
+                    class="
+                        inline-flex items-center gap-2
+                        rounded-2xl
+                        border border-sand-200
+                        bg-white
+                        px-5 py-4
+                        text-sm font-medium text-sand-700
+                        transition-all duration-200
+                        hover:bg-sand-50
+                    "
+                >
+                    <ion-icon
+                        name="refresh-outline"
+                        class="text-lg"
+                    ></ion-icon>
+
+                    Limpar
+                </a>
             </div>
-
         </div>
 
         <!-- TABLE -->
