@@ -55,6 +55,11 @@ from .mixins import (
     RedirectIfAuthenticatedMixin,
 )
 from .formatting import formatar_brl
+from .charts import (
+    dados_movimento_diario,
+    dados_top_produtos_movimentados,
+    dados_valor_estoque_mensal,
+)
 
 
 def produtos_do_usuario(user):
@@ -306,6 +311,7 @@ class PainelPageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView)
         context["categorias"] = categorias_do_usuario(user).order_by("nome")
         context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco(user)
         context["movimentacoes"] = _movimentacoes_recentes(user, 15)
+        context["chart_movimento_diario"] = dados_movimento_diario(user)
         return context
 
 class RelatoriosPageView(AppLoginRequiredMixin, TemplateView):
@@ -321,6 +327,9 @@ class RelatoriosPageView(AppLoginRequiredMixin, TemplateView):
         )
         context["movimentacoes_total"] = movimentacoes_do_usuario(user).count()
         context["categoria_distribuicao"] = _categoria_distribuicao_estoque(user)
+        context["chart_movimento_diario"] = dados_movimento_diario(user)
+        context["chart_top_produtos"] = dados_top_produtos_movimentados(user)
+        context["chart_valor_estoque_mensal"] = dados_valor_estoque_mensal(user)
         return context
 
 

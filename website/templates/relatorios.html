@@ -171,83 +171,13 @@
     </button>
 </div>
 
+{% include "components/chart_movimento_diario.html" with canvas_id="dailyMovementChart" %}
+
+{{ chart_top_produtos|json_script:"chart-top-produtos-data" }}
+{{ chart_valor_estoque_mensal|json_script:"chart-valor-estoque-mensal-data" }}
+
 <!-- Scripts -->
 <script>
-// ======================== GRÁFICO: Movimento Diário ========================
-const dailyCtx = document.getElementById('dailyMovementChart').getContext('2d');
-new Chart(dailyCtx, {
-    type: 'line',
-    data: {
-        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
-        datasets: [
-            {
-                label: 'Entrada (un)',
-                data: [120, 150, 180, 160, 200, 140, 180],
-                borderColor: '#22c55e',
-                backgroundColor: 'rgba(34, 197, 94, 0.05)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-                pointBackgroundColor: '#22c55e',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointHoverRadius: 7,
-            },
-            {
-                label: 'Saída (un)',
-                data: [80, 100, 120, 140, 110, 90, 100],
-                borderColor: '#f97316',
-                backgroundColor: 'rgba(249, 115, 22, 0.05)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-                pointBackgroundColor: '#f97316',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointHoverRadius: 7,
-            }
-        ]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-            legend: {
-                position: 'top',
-                labels: {
-                    font: { size: 12, family: 'Inter', weight: '500' },
-                    padding: 15,
-                    usePointStyle: true,
-                    boxWidth: 6,
-                    boxHeight: 6,
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                padding: 12,
-                titleFont: { size: 13, weight: 'bold' },
-                bodyFont: { size: 12 },
-                borderColor: '#e5dcc4',
-                borderWidth: 1,
-            }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                grid: { color: 'rgba(0, 0, 0, 0.05)', drawBorder: false },
-                ticks: { font: { family: 'Inter', size: 11 } }
-            },
-            x: {
-                grid: { display: false },
-                ticks: { font: { family: 'Inter', size: 11 } }
-            }
-        }
-    }
-});
-
 // ======================== GRÁFICO: Distribuição por Categoria ========================
 const categoryDist = JSON.parse(document.getElementById('categoria-distribuicao-data').textContent);
 const categoryPalette = [
@@ -305,21 +235,25 @@ new Chart(categoryCtx, {
 });
 
 // ======================== GRÁFICO: Top Produtos ========================
+const topData = JSON.parse(document.getElementById('chart-top-produtos-data').textContent);
+const topBarColors = [
+    'rgba(200, 106, 45, 0.9)',
+    'rgba(200, 106, 45, 0.8)',
+    'rgba(200, 106, 45, 0.7)',
+    'rgba(200, 106, 45, 0.6)',
+    'rgba(200, 106, 45, 0.5)',
+];
 const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
 new Chart(topProductsCtx, {
     type: 'bar',
     data: {
-        labels: ['Produto A', 'Produto B', 'Produto C', 'Produto D', 'Produto E'],
+        labels: topData.labels,
         datasets: [{
-            label: 'Movimentações',
-            data: [450, 380, 320, 290, 250],
-            backgroundColor: [
-                'rgba(200, 106, 45, 0.9)',
-                'rgba(200, 106, 45, 0.8)',
-                'rgba(200, 106, 45, 0.7)',
-                'rgba(200, 106, 45, 0.6)',
-                'rgba(200, 106, 45, 0.5)',
-            ],
+            label: 'Unidades movimentadas',
+            data: topData.values,
+            backgroundColor: topData.labels.map((_, i) =>
+                topData.placeholder ? 'rgba(180, 170, 150, 0.5)' : topBarColors[i % topBarColors.length]
+            ),
             borderColor: '#c85d35',
             borderWidth: 1,
             borderRadius: 8,
@@ -350,14 +284,15 @@ new Chart(topProductsCtx, {
 });
 
 // ======================== GRÁFICO: Valor em Estoque ========================
+const stockData = JSON.parse(document.getElementById('chart-valor-estoque-mensal-data').textContent);
 const stockValueCtx = document.getElementById('stockValueChart').getContext('2d');
 new Chart(stockValueCtx, {
-    type: 'area',
+    type: 'line',
     data: {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        labels: stockData.labels,
         datasets: [{
-            label: 'Valor (R$)',
-            data: [50000, 55000, 60000, 58000, 65000, 68000, 70000, 72000, 75000, 73000, 76000, 78000],
+            label: 'Valor em estoque (R$)',
+            data: stockData.values,
             borderColor: '#c85d35',
             backgroundColor: 'rgba(200, 106, 45, 0.1)',
             borderWidth: 3,
