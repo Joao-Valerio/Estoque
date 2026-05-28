@@ -1,5 +1,7 @@
 """Contexto global para templates (ex.: item ativo na sidebar)."""
 
+from .notifications import alertas_estoque_usuario
+
 
 def navigation(request):
     """
@@ -42,3 +44,11 @@ def navigation(request):
         section = "contato"
 
     return {"nav_section": section}
+
+
+def estoque_notifications(request):
+    alertas = alertas_estoque_usuario(request.user)
+    return {
+        "notificacoes_estoque": alertas,
+        "notificacoes_estoque_count": len(alertas),
+    }

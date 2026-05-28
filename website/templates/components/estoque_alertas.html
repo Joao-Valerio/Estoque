@@ -1,0 +1,38 @@
+{% comment %}
+Lista de alertas de estoque. Requer `notificacoes_estoque` no contexto.
+Variável opcional: alertas_compact (true = texto menor no dropdown do header)
+{% endcomment %}
+{% if notificacoes_estoque %}
+<div class="space-y-3">
+    {% for alerta in notificacoes_estoque %}
+    <a
+        href="{% url 'update_produto' alerta.produto_id %}"
+        class="block p-3 rounded-lg border transition hover:shadow-sm {{ alerta.card_class }}"
+    >
+        <div class="flex items-start gap-2">
+            <ion-icon name="{{ alerta.icon }}" class="text-lg {{ alerta.icon_class }} flex-shrink-0 mt-0.5"></ion-icon>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium {{ alerta.title_class }}">{{ alerta.status }}</p>
+                {% if alertas_compact %}
+                <p class="text-xs {{ alerta.text_class }} mt-0.5 truncate">
+                    {{ alerta.nome }} · ID #{{ alerta.produto_id }}
+                </p>
+                {% else %}
+                <p class="text-sm {{ alerta.text_class }} mt-0.5 font-medium truncate">{{ alerta.nome }}</p>
+                <p class="text-xs {{ alerta.text_class }} mt-0.5">
+                    ID #{{ alerta.produto_id }}
+                    · {{ alerta.quantidade }} un. no estoque
+                    {% if alerta.nivel == 'low' %}(mín. {{ alerta.quantidade_minima }}){% endif %}
+                </p>
+                {% endif %}
+            </div>
+            <ion-icon name="chevron-forward" class="text-sand-400 shrink-0"></ion-icon>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-sm text-sand-500 text-center py-4">
+    Nenhum alerta de estoque no momento.
+</p>
+{% endif %}

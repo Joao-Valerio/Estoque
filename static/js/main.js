@@ -128,25 +128,32 @@ function initializeTooltips() {
 // ==================== NOTIFICATIONS ====================
 
 function initializeNotifications() {
+    const btn = document.getElementById('notifications-btn');
+    const panel = document.getElementById('notifications-panel');
+    const root = document.getElementById('notifications-root');
 
-    const notificationBtn =
-        document.querySelector(
-            'button:has(ion-icon[name="notifications"])'
-        );
+    if (!btn || !panel) return;
 
-    if (!notificationBtn) return;
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const aberto = !panel.classList.contains('hidden');
+        panel.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', aberto ? 'false' : 'true');
+    });
 
-    notificationBtn.addEventListener(
-        'click',
-        showNotifications
-    );
+    document.addEventListener('click', (e) => {
+        if (root && !root.contains(e.target)) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
 
-}
-
-function showNotifications() {
-
-    console.log('Notificações clicadas');
-
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !panel.classList.contains('hidden')) {
+            panel.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+        }
+    });
 }
 
 // ==================== SEARCH ====================
