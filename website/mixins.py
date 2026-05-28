@@ -1,5 +1,45 @@
 """Mixins para páginas de formulário unificadas (Crispy + template único)."""
 
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+
+
+class RedirectIfAuthenticatedMixin:
+    """Redireciona usuários já autenticados (login/cadastro)."""
+
+    redirect_authenticated_to = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            url = self.redirect_authenticated_to or settings.LOGIN_REDIRECT_URL
+            return redirect(url)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class AppLoginRequiredMixin(LoginRequiredMixin):
+    """Exige login nas páginas internas do StockBot."""
+
+    login_url = "login"
+
+
+class OwnerScopedMixin:
+    """Lista/edita apenas registros do usuário logado; novos cadastros recebem `usuario`."""
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        model = qs.model
+        if model.__name__ == "Movimentacao":
+            return qs.filter(produto__usuario=self.request.user)
+        if hasattr(model, "usuario"):
+            return qs.filter(usuario=self.request.user)
+        return qs
+
+    def form_valid(self, form):
+        if hasattr(form.instance, "usuario_id"):
+            form.instance.usuario = self.request.user
+        return super().form_valid(form)
+
 
 class ModelFormPageMixin:
     """
@@ -20,6 +60,8 @@ class ModelFormPageMixin:
     form_header_style = "stacked"
     # delete: URL do botão cancelar (link)
     form_delete_cancel_url = ""
+    # True em login/cadastro: layout sem sidebar e header do painel
+    auth_layout = False
 
     def get_form_submit_label(self):
         return getattr(self, "form_submit_label", None)
@@ -35,6 +77,7 @@ class ModelFormPageMixin:
                 "form_outer_shell_class": self.form_outer_shell_class,
                 "form_delete_cancel_url": self.form_delete_cancel_url,
                 "form_header_style": self.form_header_style,
+                "auth_layout": getattr(self, "auth_layout", False),
             }
         )
         return context
@@ -44,6 +87,9 @@ class ModelFormPageMixin:
         label = self.get_form_submit_label()
         if label:
             kwargs["submit_label"] = label
+        request = getattr(self, "request", None)
+        if request and request.user.is_authenticated:
+            kwargs["user"] = request.user
         return kwargs
 
 

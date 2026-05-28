@@ -1,12 +1,24 @@
 from django import forms
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordChangeForm,
+    UserCreationForm,
+)
+from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 
 from .crispy_layouts import (
     attach_helper,
+    cadastro_layout,
     categoria_layout,
+    excluir_conta_layout,
     fornecedor_layout,
+    login_layout,
     movimentacao_entrada_layout,
     movimentacao_saida_layout,
+    perfil_email_layout,
+    perfil_nome_layout,
+    perfil_senha_layout,
     produto_hero_layout,
     produto_layout,
 )
@@ -20,6 +32,188 @@ from .models import (
 
 INPUT_CLASSES = "input-field"
 TEXTAREA_CLASSES = "input-field h-24 resize-none"
+
+
+def _aplicar_querysets_do_usuario(form, user):
+    if not user or not getattr(user, "is_authenticated", False):
+        return
+    if "categoria" in form.fields:
+        form.fields["categoria"].queryset = Categoria.objects.filter(usuario=user)
+    if "fornecedor" in form.fields:
+        form.fields["fornecedor"].queryset = Fornecedor.objects.filter(usuario=user)
+    if "produto" in form.fields:
+        form.fields["produto"].queryset = Produto.objects.filter(usuario=user)
+
+
+def _password_widget():
+    return forms.PasswordInput(
+        attrs={"class": INPUT_CLASSES, "placeholder": "••••••••", "autocomplete": "current-password"}
+    )
+
+
+class CadastroUsuarioForm(UserCreationForm):
+    nome = forms.CharField(
+        label="Nome",
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={"class": INPUT_CLASSES, "placeholder": "Seu nome completo", "autocomplete": "name"}
+        ),
+    )
+    email = forms.EmailField(
+        label="E-mail",
+        widget=forms.EmailInput(
+            attrs={"class": INPUT_CLASSES, "placeholder": "seu@email.com", "autocomplete": "email"}
+        ),
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("email",)
+
+    def __init__(self, *args, submit_label="Criar conta", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop("username", None)
+        for name in ("password1", "password2"):
+            self.fields[name].widget.attrs.update(
+                {"class": INPUT_CLASSES, "placeholder": "••••••••", "autocomplete": "new-password"}
+            )
+        self.helper = FormHelper()
+        attach_helper(self.helper, cadastro_layout(submit_label=submit_label))
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("Este e-mail já está em uso.")
+        if User.objects.filter(username__iexact=email).exists():
+            raise forms.ValidationError("Este e-mail já está em uso.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        email = self.cleaned_data["email"].strip().lower()
+        user.username = email
+        user.email = email
+        user.first_name = self.cleaned_data["nome"].strip()
+        if commit:
+            user.save()
+        return user
+
+
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, submit_label="Entrar", **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].label = "E-mail"
+        self.fields["username"].widget = forms.EmailInput(
+            attrs={
+                "class": INPUT_CLASSES,
+                "placeholder": "seu@email.com",
+                "autocomplete": "email",
+            }
+        )
+        self.fields["password"].widget = _password_widget()
+        self.helper = FormHelper()
+        attach_helper(self.helper, login_layout(submit_label=submit_label))
+
+    def clean_username(self):
+        email = (self.cleaned_data.get("username") or "").strip().lower()
+        if not email:
+            return email
+        user = User.objects.filter(email__iexact=email).first()
+        if user:
+            return user.username
+        user = User.objects.filter(username__iexact=email).first()
+        if user:
+            return user.username
+        return email
+
+
+class PerfilNomeForm(forms.Form):
+    nome = forms.CharField(
+        label="Nome",
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={"class": INPUT_CLASSES, "placeholder": "Seu nome", "autocomplete": "name"}
+        ),
+    )
+
+    def __init__(self, *args, user, submit_label="Salvar nome", **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        self.fields["nome"].initial = user.first_name
+        self.helper = FormHelper()
+        attach_helper(self.helper, perfil_nome_layout(submit_label=submit_label))
+
+    def save(self):
+        self.user.first_name = self.cleaned_data["nome"].strip()
+        self.user.save(update_fields=["first_name"])
+        return self.user
+
+
+class PerfilEmailForm(forms.Form):
+    email = forms.EmailField(
+        label="E-mail",
+        widget=forms.EmailInput(
+            attrs={"class": INPUT_CLASSES, "placeholder": "novo@email.com", "autocomplete": "email"}
+        ),
+    )
+
+    def __init__(self, *args, user, submit_label="Salvar e-mail", **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        self.fields["email"].initial = user.email
+        self.helper = FormHelper()
+        attach_helper(self.helper, perfil_email_layout(submit_label=submit_label))
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if (
+            User.objects.filter(email__iexact=email)
+            .exclude(pk=self.user.pk)
+            .exists()
+        ):
+            raise forms.ValidationError("Este e-mail já está em uso.")
+        if (
+            User.objects.filter(username__iexact=email)
+            .exclude(pk=self.user.pk)
+            .exists()
+        ):
+            raise forms.ValidationError("Este e-mail já está em uso.")
+        return email
+
+    def save(self):
+        email = self.cleaned_data["email"]
+        self.user.email = email
+        self.user.username = email
+        self.user.save(update_fields=["email", "username"])
+        return self.user
+
+
+class PerfilSenhaForm(PasswordChangeForm):
+    def __init__(self, *args, submit_label="Alterar senha", **kwargs):
+        super().__init__(*args, **kwargs)
+        for name in self.fields:
+            self.fields[name].widget = _password_widget()
+        self.helper = FormHelper()
+        attach_helper(self.helper, perfil_senha_layout(submit_label=submit_label))
+
+
+class ExcluirContaForm(forms.Form):
+    senha = forms.CharField(
+        label="Senha",
+        widget=_password_widget(),
+    )
+
+    def __init__(self, *args, user, submit_label="Excluir minha conta", **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        attach_helper(self.helper, excluir_conta_layout(submit_label=submit_label))
+
+    def clean_senha(self):
+        senha = self.cleaned_data.get("senha")
+        if not self.user.check_password(senha):
+            raise forms.ValidationError("Senha incorreta.")
+        return senha
 
 
 class ProdutoForm(forms.ModelForm):
@@ -72,7 +266,9 @@ class ProdutoForm(forms.ModelForm):
 
     def __init__(self, *args, submit_label="Criar Produto", **kwargs):
         submit_extra_class = kwargs.pop("submit_extra_class", "")
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        _aplicar_querysets_do_usuario(self, user)
         self.helper = FormHelper()
         attach_helper(
             self.helper,
@@ -128,7 +324,9 @@ class MovimentacaoEntradaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, submit_label="Confirmar entrada", **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        _aplicar_querysets_do_usuario(self, user)
         self.helper = FormHelper()
         attach_helper(
             self.helper, movimentacao_entrada_layout(submit_label=submit_label)
@@ -178,7 +376,9 @@ class MovimentacaoSaidaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, submit_label="Confirmar saída", **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        _aplicar_querysets_do_usuario(self, user)
         self.helper = FormHelper()
         attach_helper(self.helper, movimentacao_saida_layout(submit_label=submit_label))
 
@@ -269,6 +469,8 @@ class UpdateProdutoForm(forms.ModelForm):
         }
 
     def __init__(self, *args, submit_label="Salvar Alterações", **kwargs):
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+        _aplicar_querysets_do_usuario(self, user)
         self.helper = FormHelper()
         attach_helper(self.helper, produto_hero_layout(submit_label=submit_label))

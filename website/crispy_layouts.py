@@ -182,6 +182,83 @@ def produto_hero_layout(*, submit_label: str) -> Layout:
     )
 
 
+def cadastro_layout(*, submit_label: str) -> Layout:
+    return Layout(
+        _lbl("nome", "person", "Nome *"),
+        Field("nome", wrapper_class=""),
+        _lbl("email", "mail", "E-mail *"),
+        Field("email", wrapper_class=""),
+        _lbl("password1", "lock-closed", "Senha *"),
+        Field("password1", wrapper_class=""),
+        _lbl("password2", "lock-closed", "Confirmar senha *"),
+        Field("password2", wrapper_class=""),
+        _actions_row(submit_label=submit_label),
+    )
+
+
+def login_layout(*, submit_label: str) -> Layout:
+    return Layout(
+        _lbl("username", "mail", "E-mail *"),
+        Field("username", wrapper_class=""),
+        _lbl("password", "lock-closed", "Senha *"),
+        Field("password", wrapper_class=""),
+        _actions_row(submit_label=submit_label),
+    )
+
+
+def perfil_nome_layout(*, submit_label: str) -> Layout:
+    return Layout(
+        _lbl("nome", "person", "Nome *"),
+        Field("nome", wrapper_class=""),
+        _actions_row(submit_label=submit_label),
+    )
+
+
+def perfil_email_layout(*, submit_label: str) -> Layout:
+    return Layout(
+        _lbl("email", "mail", "Novo e-mail *"),
+        Field("email", wrapper_class=""),
+        _actions_row(submit_label=submit_label),
+    )
+
+
+def perfil_senha_layout(*, submit_label: str) -> Layout:
+    return Layout(
+        _lbl("old_password", "lock-closed", "Senha atual *"),
+        Field("old_password", wrapper_class=""),
+        _lbl("new_password1", "key", "Nova senha *"),
+        Field("new_password1", wrapper_class=""),
+        _lbl("new_password2", "key", "Confirmar nova senha *"),
+        Field("new_password2", wrapper_class=""),
+        _actions_row(submit_label=submit_label),
+    )
+
+
+def excluir_conta_layout(*, submit_label: str) -> Layout:
+    return Layout(
+        HTML(
+            """
+            <p class="text-sm text-sand-600 mb-4">
+                Esta ação é permanente. Todos os dados da sua conta serão removidos.
+            </p>
+            """
+        ),
+        _lbl("senha", "lock-closed", "Digite sua senha para confirmar *"),
+        Field("senha", wrapper_class=""),
+        HTML(
+            f"""
+            <div class="flex gap-3 pt-6 border-t border-sand-100">
+                <button type="button" onclick="window.history.back()" class="btn-secondary flex-1">Cancelar</button>
+                <button type="submit" class="btn-primary flex flex-1 items-center justify-center gap-2 bg-red-600 hover:bg-red-700">
+                    <ion-icon name="trash" class="text-lg"></ion-icon>
+                    {submit_label}
+                </button>
+            </div>
+            """
+        ),
+    )
+
+
 def attach_helper(
     helper: FormHelper,
     layout: Layout,

@@ -28,7 +28,15 @@ def navigation(request):
         section = "relatorios"
     elif name in ("fornecedores", "create_fornecedor", "update_fornecedor", "delete_fornecedor"):
         section = "fornecedores"
-    elif name in ("configuracoes", "perfil"):
+    elif name in (
+        "perfil",
+        "perfil_nome",
+        "perfil_email",
+        "perfil_senha",
+        "excluir_conta",
+    ):
+        section = "perfil"
+    elif name in ("configuracoes",):
         section = "configuracoes"
     elif name in ("contato",):
         section = "contato"

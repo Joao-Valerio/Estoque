@@ -1,8 +1,17 @@
+from django.conf import settings
 from django.db import models
 
 # Create your models here.
 
+
 class Categoria(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="categorias",
+        null=True,
+        blank=True,
+    )
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
 
@@ -10,6 +19,13 @@ class Categoria(models.Model):
         return self.nome
 
 class Fornecedor(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="fornecedores",
+        null=True,
+        blank=True,
+    )
     nome = models.CharField(max_length=100)
     email = models.EmailField()
     telefone = models.CharField(max_length=15)
@@ -20,6 +36,13 @@ class Fornecedor(models.Model):
 
 
 class Produto(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="produtos",
+        null=True,
+        blank=True,
+    )
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
     preco = models.DecimalField(max_digits=10, decimal_places=2)

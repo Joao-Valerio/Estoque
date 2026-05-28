@@ -22,9 +22,19 @@ from .views import (
     UpdateFornecedorPageView,
     DeleteFornecedorView,
     UpdateProdutoPageView,
+    CadastroUsuarioView,
+    LoginUsuarioView,
+    LogoutUsuarioView,
+    PerfilNomeUpdateView,
+    PerfilEmailUpdateView,
+    PerfilSenhaUpdateView,
+    ExcluirContaView,
 )
 
 urlpatterns = [
+    path("cadastro/", CadastroUsuarioView.as_view(), name="cadastro"),
+    path("login/", LoginUsuarioView.as_view(), name="login"),
+    path("logout/", LogoutUsuarioView.as_view(), name="logout"),
     path("", HomePageView.as_view(), name="home"),
     path("modelo/", ModeloPageView.as_view(), name="modelo"),
     path("painel/", PainelPageView.as_view(), name="painel"),
@@ -55,6 +65,10 @@ urlpatterns = [
         name="relatorio",
     ),
     path("perfil/", PerfilPageView.as_view(), name="perfil"),
+    path("perfil/nome/", PerfilNomeUpdateView.as_view(), name="perfil_nome"),
+    path("perfil/email/", PerfilEmailUpdateView.as_view(), name="perfil_email"),
+    path("perfil/senha/", PerfilSenhaUpdateView.as_view(), name="perfil_senha"),
+    path("perfil/excluir/", ExcluirContaView.as_view(), name="excluir_conta"),
     path("configuracoes/", ConfiguracoesPageView.as_view(), name="configuracoes"),
     path("contato/", ContatoPageView.as_view(), name="contato"),
     path("produto/novo/", CreateProdutoPageView.as_view(), name="create_produto"),
@@ -62,6 +76,5 @@ urlpatterns = [
     path("fornecedor/novo/", CreateFornecedorPageView.as_view(), name="create_fornecedor"),
     path("fornecedor/editar/<int:pk>/", UpdateFornecedorPageView.as_view(), name="update_fornecedor"),
     path("fornecedor/excluir/<int:pk>/", DeleteFornecedorView.as_view(), name="delete_fornecedor"),
-    path("produto/editar/<int:pk>/", UpdateProdutoPageView.as_view(), name="update_produto"),   
-    
+    path("produto/editar/<int:pk>/", UpdateProdutoPageView.as_view(), name="update_produto"),
 ]
