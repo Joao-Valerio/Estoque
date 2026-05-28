@@ -100,6 +100,35 @@ def dados_top_produtos_movimentados(user, *, limit=5, filtro=None):
     return {"labels": labels, "values": values, "placeholder": False}
 
 
+def top_produtos_vendidos_painel(user, *, limit=5):
+    """Top produtos por unidades vendidas (movimentações de saída)."""
+    rows = list(
+        _movimentacoes_do_usuario(user)
+        .filter(tipo="S")
+        .values("produto_id", "produto__nome")
+        .annotate(total=Sum("quantidade"))
+        .order_by("-total")[:limit]
+    )
+    if not rows or not (rows[0]["total"] or 0):
+        return []
+
+    max_total = rows[0]["total"] or 1
+    itens = []
+    for r in rows:
+        qtd = r["total"] or 0
+        if qtd <= 0:
+            continue
+        itens.append(
+            {
+                "produto_id": r["produto_id"],
+                "nome": r["produto__nome"] or "Sem nome",
+                "quantidade": int(qtd),
+                "percentual": max(5, round((qtd / max_total) * 100)),
+            }
+        )
+    return itens
+
+
 def _ultimos_periodos_meses(quantidade: int):
     agora = timezone.localdate()
     y, m = agora.year, agora.month

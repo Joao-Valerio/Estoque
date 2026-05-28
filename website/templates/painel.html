@@ -97,24 +97,31 @@
     <div class="card p-6">
         <h3 class="text-lg font-semibold text-sand-900 mb-6">Produtos Mais Vendidos</h3>
         <div class="space-y-4">
-            {% for i in "12345" %}
-            <div class="flex items-center justify-between pb-4 border-b border-sand-100 last:border-b-0 last:pb-0">
+            {% for item in top_produtos_vendidos %}
+            <a
+                href="{% url 'update_produto' item.produto_id %}"
+                class="flex items-center justify-between pb-4 border-b border-sand-100 last:border-b-0 last:pb-0 hover:bg-sand-50/80 -mx-2 px-2 rounded-lg transition"
+            >
                 <div class="flex items-center gap-3 flex-1 min-w-0">
                     <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center flex-shrink-0">
                         <ion-icon name="cube" class="text-lg text-stone-600"></ion-icon>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="font-medium text-sand-900 truncate">Produto {{ i }}</p>
-                        <p class="text-xs text-sand-500">{{ i }}00 unidades vendidas</p>
+                        <p class="font-medium text-sand-900 truncate">{{ item.nome }}</p>
+                        <p class="text-xs text-sand-500">{{ item.quantidade }} unidade{{ item.quantidade|pluralize }} vendida{{ item.quantidade|pluralize }}</p>
                     </div>
                 </div>
-                <div class="text-right">
-                    <p class="font-semibold text-sand-900">{{ i }}%</p>
+                <div class="text-right shrink-0 ml-3">
+                    <p class="font-semibold text-sand-900">{{ item.percentual }}%</p>
                     <div class="h-1.5 w-16 bg-sand-100 rounded-full mt-1 overflow-hidden">
-                        <div class="h-full bg-gradient-to-r from-stone-600 to-stone-700" style="width: {{ i }}0%"></div>
+                        <div class="h-full bg-gradient-to-r from-stone-600 to-stone-700" style="width: {{ item.percentual }}%"></div>
                     </div>
                 </div>
-            </div>
+            </a>
+            {% empty %}
+            <p class="text-sm text-sand-500 text-center py-6">
+                Nenhuma venda registrada ainda. Registre uma <a href="{% url 'create_movimentacao_saida' %}" class="font-medium text-stone-700 hover:underline">saída de estoque</a> para ver o ranking.
+            </p>
             {% endfor %}
         </div>
     </div>

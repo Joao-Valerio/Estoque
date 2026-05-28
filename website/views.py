@@ -59,6 +59,7 @@ from .charts import (
     dados_movimento_diario,
     dados_top_produtos_movimentados,
     dados_valor_estoque_mensal,
+    top_produtos_vendidos_painel,
 )
 from .relatorio_filtros import FiltroRelatorio, PERIODO_OPCOES
 
@@ -318,6 +319,10 @@ class PainelPageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView)
         context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco(user)
         context["movimentacoes"] = _movimentacoes_recentes(user, 15)
         context["chart_movimento_diario"] = dados_movimento_diario(user)
+        context["top_produtos_vendidos"] = top_produtos_vendidos_painel(user)
+        context["mais_vendidos"] = sum(
+            p["quantidade"] for p in context["top_produtos_vendidos"]
+        )
         return context
 
 class RelatoriosPageView(AppLoginRequiredMixin, TemplateView):
