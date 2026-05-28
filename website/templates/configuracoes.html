@@ -49,28 +49,14 @@
 
             </div>
 
-            <div class="mt-6 space-y-4">
-
-                <input
-                    type="text"
-                    placeholder="Nome"
-                    class="
-                        w-full rounded-xl border border-sand-200
-                        px-4 py-3 outline-none
-                        focus:border-stone-500
-                    "
-                >
-
-                <input
-                    type="email"
-                    placeholder="Email"
-                    class="
-                        w-full rounded-xl border border-sand-200
-                        px-4 py-3 outline-none
-                        focus:border-stone-500
-                    "
-                >
-
+            <div class="mt-6">
+                <p class="text-sm text-sand-600 mb-4">
+                    Nome, e-mail, senha e exclusão da conta estão em Minha conta.
+                </p>
+                <a href="{% url 'perfil' %}" class="btn-primary inline-flex items-center gap-2">
+                    <ion-icon name="person-circle-outline" class="text-lg"></ion-icon>
+                    Abrir Minha conta
+                </a>
             </div>
 
         </div>

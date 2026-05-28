@@ -22,12 +22,28 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     
-    <!-- Chart.js para gráficos -->
+    {% if not auth_layout %}
+    <!-- Chart.js para gráficos (painel interno) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
+    {% endif %}
+
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-sand-50 text-sand-900 font-sans antialiased transition-colors duration-300">
+<body class="bg-sand-50 text-sand-900 font-sans antialiased{% if auth_layout %} min-h-screen flex flex-col{% else %} transition-colors duration-300{% endif %}">
+    {% if auth_layout %}
+    <header class="shrink-0 border-b border-sand-100 bg-white/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <a href="{% url 'home' %}" class="flex items-center gap-3 w-fit transition-opacity hover:opacity-80">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-stone-600 to-stone-700">
+                    <ion-icon name="cube" class="text-2xl text-white"></ion-icon>
+                </div>
+                <span class="text-xl font-bold text-sand-900">StockBot</span>
+            </a>
+        </div>
+    </header>
+    <main class="flex-1 flex flex-col justify-center px-6 py-10">
+        <div class="w-full max-w-2xl mx-auto">
+    {% else %}
     <div id="app" class="flex min-h-screen">
         <!-- Sidebar -->
         <aside
@@ -81,6 +97,11 @@
 
                 <hr class="my-4 border-sand-100">
 
+                <a href="{% url 'perfil' %}" class="sidebar-link{% if nav_section == 'perfil' %} active{% endif %}">
+                    <ion-icon name="person-circle" class="text-xl"></ion-icon>
+                    <span>Minha conta</span>
+                </a>
+
                 <a href="{% url 'configuracoes' %}" class="sidebar-link{% if nav_section == 'configuracoes' %} active{% endif %}">
                     <ion-icon name="settings" class="text-xl"></ion-icon>
                     <span>Configurações</span>
@@ -93,16 +114,31 @@
             </nav>
 
             <!-- Footer -->
-            <div class="absolute bottom-0 left-0 right-0 border-t border-sand-100 bg-gradient-to-r from-sand-50 to-sand-100 p-4">
-                <div class="flex items-center gap-3">
-                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-stone-500 to-stone-600 flex items-center justify-center">
+            <div class="absolute bottom-0 left-0 right-0 border-t border-sand-100 bg-gradient-to-r from-sand-50 to-sand-100 p-4 space-y-3">
+                <a href="{% url 'perfil' %}" class="flex items-center gap-3 rounded-lg p-1 -m-1 hover:bg-sand-100 transition">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-stone-500 to-stone-600 flex items-center justify-center shrink-0">
                         <ion-icon name="person" class="text-lg text-white"></ion-icon>
                     </div>
-                    <div class="flex flex-col">
-                        <p class="text-sm font-medium text-sand-900">Usuário</p>
-                        <p class="text-xs text-sand-500">admin@stockbot.com</p>
+                    <div class="flex flex-col min-w-0">
+                        <p class="text-sm font-medium text-sand-900 truncate">
+                            {% if user.is_authenticated %}{{ user.first_name|default:user.email }}{% else %}Visitante{% endif %}
+                        </p>
+                        <p class="text-xs text-sand-500 truncate">
+                            {% if user.is_authenticated %}{{ user.email }}{% else %}Não conectado{% endif %}
+                        </p>
                     </div>
-                </div>
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="sidebar-link text-sm py-2">
+                    <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
+                    <span>Sair</span>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="sidebar-link text-sm py-2">
+                    <ion-icon name="log-in-outline" class="text-xl"></ion-icon>
+                    <span>Entrar</span>
+                </a>
+                {% endif %}
             </div>
         </aside>
 
@@ -122,11 +158,23 @@
                     </div>
 
                     <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-                        <!-- Search -->
-                        <div class="hidden sm:flex items-center gap-2 px-4 py-2 bg-sand-50 rounded-lg border border-sand-100 focus-within:ring-2 focus-within:ring-stone-500 focus-within:border-transparent transition-all">
-                            <ion-icon name="search" class="text-sand-500"></ion-icon>
-                            <input type="text" placeholder="Buscar..." class="bg-transparent border-none outline-none text-sm w-32 placeholder-sand-400">
-                        </div>
+                        <!-- Search (produtos do usuário) -->
+                        <form
+                            method="get"
+                            action="{% url 'produtos' %}"
+                            role="search"
+                            class="hidden sm:flex items-center gap-2 px-4 py-2 bg-sand-50 rounded-lg border border-sand-100 focus-within:ring-2 focus-within:ring-stone-500 focus-within:border-transparent transition-all"
+                        >
+                            <ion-icon name="search" class="text-sand-500 shrink-0" aria-hidden="true"></ion-icon>
+                            <input
+                                type="search"
+                                name="q"
+                                value="{{ request.GET.q }}"
+                                placeholder="Buscar produtos..."
+                                class="bg-transparent border-none outline-none text-sm w-32 sm:w-40 placeholder-sand-400"
+                                aria-label="Buscar produtos"
+                            >
+                        </form>
 
                         <!-- Notifications -->
                         <button type="button" class="btn-icon relative group">
@@ -139,10 +187,19 @@
                             </div>
                         </button>
 
-                        <!-- User Avatar -->
-                        <button type="button" class="btn-icon">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" alt="Avatar" class="h-8 w-8 rounded-full">
-                        </button>
+                        <!-- User Avatar → Minha conta -->
+                        <a
+                            href="{% url 'perfil' %}"
+                            class="btn-icon"
+                            aria-label="Abrir minha conta"
+                            title="Minha conta"
+                        >
+                            <img
+                                src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.email|default:user.username|urlencode }}"
+                                alt="Avatar de {{ user.first_name|default:user.email }}"
+                                class="h-8 w-8 rounded-full ring-2 ring-transparent hover:ring-stone-300 transition"
+                            >
+                        </a>
                     </div>
                 </div>
             </header>
@@ -150,13 +207,32 @@
             <!-- Page Content -->
             <div id="main-scroll-region" class="flex-1 overflow-auto">
                 <div class="px-6 py-8">
-                    {% block content %}{% endblock %}
+    {% endif %}
+
+    {% if messages %}
+    <div class="mb-6 space-y-2">
+        {% for message in messages %}
+        <div class="rounded-xl border px-4 py-3 text-sm {% if message.tags == 'error' %}border-red-200 bg-red-50 text-red-800{% elif message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-sand-200 bg-sand-50 text-sand-800{% endif %}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+
+    {% if auth_layout %}
+        </div>
+    </main>
+    {% else %}
                 </div>
             </div>
         </main>
     </div>
+    {% endif %}
 
+    {% if not auth_layout %}
     <script src="{% static_v 'js/main.js' %}"></script>
+    {% endif %}
     {% block extra_js %}{% endblock %}
 </body>
 </html>

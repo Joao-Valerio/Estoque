@@ -28,10 +28,15 @@
                 <span class="text-xl font-bold text-sand-900">StockBot</span>
             </div>
             
-            <a href="{% url 'painel' %}" class="btn-primary flex items-center gap-2">
-                <ion-icon name="log-in"></ion-icon>
-                Entrar no Painel
-            </a>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="{% url 'login' %}" class="btn-primary flex items-center gap-2">
+                    <ion-icon name="log-in"></ion-icon>
+                    Entrar
+                </a>
+                <a href="{% url 'cadastro' %}" class="btn-secondary flex items-center gap-2">
+                    Criar conta
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -78,9 +83,9 @@
 
                     <!-- CTA Button -->
                     <div class="flex flex-wrap gap-4 pt-4">
-                        <a href="{% url 'painel' %}" class="btn-primary px-8 py-3 text-lg flex items-center gap-2">
+                        <a href="{% url 'login' %}" class="btn-primary px-8 py-3 text-lg flex items-center gap-2">
                             <ion-icon name="arrow-forward"></ion-icon>
-                            Acessar Painel
+                            Entrar
                         </a>
                         <a href="#features" class="btn-secondary px-8 py-3 text-lg flex items-center gap-2">
                             <ion-icon name="arrow-down"></ion-icon>
@@ -181,7 +186,7 @@
             <div class="bg-gradient-to-br from-stone-600 to-stone-700 rounded-2xl p-12 text-white text-center">
                 <h2 class="text-4xl font-bold mb-4">Pronto para começar?</h2>
                 <p class="text-xl text-stone-100 mb-8">Acesse o painel e gerencie seu estoque com eficiência</p>
-                <a href="{% url 'painel' %}" class="inline-block bg-white text-stone-600 font-bold px-8 py-3 rounded-lg hover:bg-sand-100 transition-colors">
+                <a href="{% url 'login' %}" class="inline-block bg-white text-stone-600 font-bold px-8 py-3 rounded-lg hover:bg-sand-100 transition-colors">
                     Entrar no Sistema
                 </a>
             </div>

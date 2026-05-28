@@ -1,10 +1,73 @@
 {% extends 'base.html' %}
 
-{% block title %}Perfil - StockBot{% endblock %}
+{% block title %}Minha conta - StockBot{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
-    <h1 class="text-3xl font-bold text-sand-900 mb-4">Perfil</h1>
-    <p class="text-sand-600 mb-8">Gerencie seu perfil com precisão e eficiência.</p>
+<div class="max-w-3xl mx-auto space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold text-sand-900">Minha conta</h1>
+        <p class="text-sand-600 mt-1">Gerencie seus dados de acesso e preferências da conta.</p>
+    </div>
+
+    <div class="card p-6 flex items-start gap-4">
+        <div class="h-14 w-14 rounded-full bg-gradient-to-br from-stone-500 to-stone-600 flex items-center justify-center shrink-0">
+            <ion-icon name="person" class="text-2xl text-white"></ion-icon>
+        </div>
+        <div class="min-w-0">
+            <p class="text-sm text-sand-500">Conectado como</p>
+            <p class="text-xl font-semibold text-sand-900 truncate">{{ perfil_nome }}</p>
+            <p class="text-sm text-sand-600 truncate">{{ perfil_email }}</p>
+        </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+        <a href="{% url 'perfil_nome' %}" class="card p-6 hover:shadow-md transition group">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="rounded-xl bg-stone-100 p-3 group-hover:bg-stone-200 transition">
+                    <ion-icon name="person-outline" class="text-xl text-stone-700"></ion-icon>
+                </div>
+                <h2 class="font-semibold text-sand-900">Alterar nome</h2>
+            </div>
+            <p class="text-sm text-sand-500">Atualize como seu nome é exibido no sistema.</p>
+        </a>
+
+        <a href="{% url 'perfil_email' %}" class="card p-6 hover:shadow-md transition group">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="rounded-xl bg-blue-100 p-3 group-hover:bg-blue-200 transition">
+                    <ion-icon name="mail-outline" class="text-xl text-blue-700"></ion-icon>
+                </div>
+                <h2 class="font-semibold text-sand-900">Alterar e-mail</h2>
+            </div>
+            <p class="text-sm text-sand-500">Troque o e-mail usado para login e notificações.</p>
+        </a>
+
+        <a href="{% url 'perfil_senha' %}" class="card p-6 hover:shadow-md transition group">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="rounded-xl bg-amber-100 p-3 group-hover:bg-amber-200 transition">
+                    <ion-icon name="lock-closed-outline" class="text-xl text-amber-800"></ion-icon>
+                </div>
+                <h2 class="font-semibold text-sand-900">Alterar senha</h2>
+            </div>
+            <p class="text-sm text-sand-500">Defina uma nova senha mantendo a conta segura.</p>
+        </a>
+
+        <a href="{% url 'excluir_conta' %}" class="card p-6 border-red-100 hover:shadow-md transition group">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="rounded-xl bg-red-100 p-3 group-hover:bg-red-200 transition">
+                    <ion-icon name="trash-outline" class="text-xl text-red-700"></ion-icon>
+                </div>
+                <h2 class="font-semibold text-red-800">Excluir conta</h2>
+            </div>
+            <p class="text-sm text-sand-500">Remove permanentemente sua conta e encerra o acesso.</p>
+        </a>
+    </div>
+
+    <form method="post" action="{% url 'logout' %}" class="pt-2">
+        {% csrf_token %}
+        <button type="submit" class="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2">
+            <ion-icon name="log-out-outline" class="text-lg"></ion-icon>
+            Sair da conta
+        </button>
+    </form>
 </div>
 {% endblock %}
