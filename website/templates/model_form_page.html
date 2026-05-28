@@ -52,16 +52,27 @@
     <div class="mb-8 flex items-center justify-between">
         <div>
             <div class="flex items-center gap-3 mb-2">
+                {% if auth_layout %}
+                <a href="{% url 'home' %}" class="btn-icon" aria-label="Voltar ao início">
+                    <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
+                </a>
+                {% else %}
                 <button type="button" onclick="window.history.back()" class="btn-icon">
                     <ion-icon name="chevron-back" class="text-2xl text-sand-600"></ion-icon>
                 </button>
+                {% endif %}
                 <h1 class="text-3xl font-bold text-sand-900">{{ form_page_title }}</h1>
             </div>
-            <p class="text-sand-600">{{ form_page_subtitle }}</p>
+            <p class="{% if auth_layout %}text-sand-600 ml-12{% else %}text-sand-600{% endif %}">{{ form_page_subtitle }}</p>
         </div>
     </div>
     {% endif %}
     {% include "components/forms.html" %}
+    {% if form_page_footer %}
+    <div class="mt-6 text-center text-sm text-sand-600">
+        {{ form_page_footer|safe }}
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 {% endblock %}
