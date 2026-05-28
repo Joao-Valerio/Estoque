@@ -60,6 +60,7 @@ from .charts import (
     dados_top_produtos_movimentados,
     dados_valor_estoque_mensal,
 )
+from .relatorio_filtros import FiltroRelatorio, PERIODO_OPCOES
 
 
 def produtos_do_usuario(user):
@@ -119,13 +120,16 @@ def _movimentacao_tipos_relatorio(user):
     return [{"id": code, "nome": labels[code]} for code in order if code in found]
 
 
-def _categoria_distribuicao_estoque(user):
+def _categoria_distribuicao_estoque(user, filtro=None):
     """
     Distribuição do valor em estoque por categoria (Σ quantidade × preço unitário).
     Retorna dict com labels, values (float) e flag placeholder quando não há dados.
     """
+    produtos_qs = produtos_do_usuario(user)
+    if filtro:
+        produtos_qs = filtro.aplicar_produtos(produtos_qs)
     rows = (
-        produtos_do_usuario(user).values("categoria__nome")
+        produtos_qs.values("categoria__nome")
         .annotate(
             total_valor=Sum(
                 ExpressionWrapper(
@@ -153,12 +157,14 @@ def _categoria_distribuicao_estoque(user):
     return {"labels": labels, "values": values, "placeholder": False}
 
 
-def _movimentacoes_recentes(user, limit=15, *, annotate_valor_mov=False):
+def _movimentacoes_recentes(user, limit=15, *, annotate_valor_mov=False, filtro=None):
     """
     Últimas movimentações (produto/fornecedor em join).
     Com annotate_valor_mov=True, acrescenta quantidade × preço unitário atual.
     """
     qs = movimentacoes_do_usuario(user).select_related("produto", "fornecedor")
+    if filtro:
+        qs = filtro.aplicar_movimentacoes(qs)
     if annotate_valor_mov:
         qs = qs.annotate(
             valor_mov=ExpressionWrapper(
@@ -320,16 +326,33 @@ class RelatoriosPageView(AppLoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        filtro = FiltroRelatorio.from_request(self.request)
+
+        if filtro.categoria_id and not categorias_do_usuario(user).filter(
+            pk=filtro.categoria_id
+        ).exists():
+            filtro.categoria_id = None
+
+        movs_filtradas = filtro.aplicar_movimentacoes(movimentacoes_do_usuario(user))
+
         context["categorias"] = categorias_do_usuario(user).order_by("nome")
         context["tipos"] = _movimentacao_tipos_relatorio(user)
+        context["filtro"] = filtro
+        context["periodo_opcoes"] = PERIODO_OPCOES
         context["movimentacoes"] = _movimentacoes_recentes(
-            user, 15, annotate_valor_mov=True
+            user, 15, annotate_valor_mov=True, filtro=filtro
         )
-        context["movimentacoes_total"] = movimentacoes_do_usuario(user).count()
-        context["categoria_distribuicao"] = _categoria_distribuicao_estoque(user)
-        context["chart_movimento_diario"] = dados_movimento_diario(user)
-        context["chart_top_produtos"] = dados_top_produtos_movimentados(user)
-        context["chart_valor_estoque_mensal"] = dados_valor_estoque_mensal(user)
+        context["movimentacoes_total"] = movs_filtradas.count()
+        context["categoria_distribuicao"] = _categoria_distribuicao_estoque(
+            user, filtro=filtro
+        )
+        context["chart_movimento_diario"] = dados_movimento_diario(user, filtro=filtro)
+        context["chart_top_produtos"] = dados_top_produtos_movimentados(
+            user, filtro=filtro
+        )
+        context["chart_valor_estoque_mensal"] = dados_valor_estoque_mensal(
+            user, filtro=filtro
+        )
         return context
 
 

@@ -6,6 +6,7 @@ from django.db.models import Sum
 from django.utils import timezone
 
 from .models import Movimentacao, Produto
+from .relatorio_filtros import FiltroRelatorio
 
 
 def _movimentacoes_do_usuario(user):
@@ -32,38 +33,52 @@ _MESES_CURTOS = (
 _DIAS_SEMANA = ("Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom")
 
 
-def dados_movimento_diario(user, *, dias=7):
-    """Soma de unidades de entrada e saída por dia (últimos N dias)."""
+def dados_movimento_diario(user, *, dias=7, filtro=None):
+    """Soma de unidades de entrada e saída por dia."""
+    if filtro:
+        dias = filtro.dias_grafico_linha()
+        base = filtro.aplicar_movimentacoes(_movimentacoes_do_usuario(user))
+    else:
+        base = _movimentacoes_do_usuario(user)
+
     hoje = timezone.localdate()
+    inicio = hoje - timedelta(days=dias - 1)
     labels = []
     entrada = []
     saida = []
-    base = _movimentacoes_do_usuario(user)
+    tem_dado = False
 
     for offset in range(dias - 1, -1, -1):
         dia = hoje - timedelta(days=offset)
-        labels.append(_DIAS_SEMANA[dia.weekday()])
+        if dia < inicio:
+            continue
+        if dias <= 7:
+            labels.append(_DIAS_SEMANA[dia.weekday()])
+        else:
+            labels.append(dia.strftime("%d/%m"))
         qs = base.filter(data__date=dia)
-        entrada.append(
-            qs.filter(tipo="E").aggregate(total=Sum("quantidade"))["total"] or 0
-        )
-        saida.append(
-            qs.filter(tipo="S").aggregate(total=Sum("quantidade"))["total"] or 0
-        )
+        e = qs.filter(tipo="E").aggregate(total=Sum("quantidade"))["total"] or 0
+        s = qs.filter(tipo="S").aggregate(total=Sum("quantidade"))["total"] or 0
+        entrada.append(e)
+        saida.append(s)
+        if e or s:
+            tem_dado = True
 
     return {
         "labels": labels,
         "entrada": entrada,
         "saida": saida,
-        "placeholder": not base.exists(),
+        "placeholder": not tem_dado,
     }
 
 
-def dados_top_produtos_movimentados(user, *, limit=5):
+def dados_top_produtos_movimentados(user, *, limit=5, filtro=None):
     """Top produtos por quantidade total movimentada (entradas + saídas)."""
+    base = _movimentacoes_do_usuario(user)
+    if filtro:
+        base = filtro.aplicar_movimentacoes(base)
     rows = (
-        _movimentacoes_do_usuario(user)
-        .values("produto__nome")
+        base.values("produto__nome")
         .annotate(total=Sum("quantidade"))
         .order_by("-total")[:limit]
     )
@@ -99,12 +114,18 @@ def _ultimos_periodos_meses(quantidade: int):
     return periodos
 
 
-def dados_valor_estoque_mensal(user, *, meses=12):
+def dados_valor_estoque_mensal(user, *, meses=12, filtro=None):
     """
     Valor em estoque (Σ qtd × preço) ao fim de cada mês,
     estimado revertendo movimentações a partir do estoque atual.
     """
-    produtos = list(_produtos_do_usuario(user))
+    if filtro:
+        meses = filtro.meses_grafico_valor()
+
+    produtos_qs = _produtos_do_usuario(user)
+    if filtro:
+        produtos_qs = filtro.aplicar_produtos(produtos_qs)
+    produtos = list(produtos_qs)
     periodos = _ultimos_periodos_meses(meses)
 
     if not produtos:
@@ -122,7 +143,10 @@ def dados_valor_estoque_mensal(user, *, meses=12):
             sum(max(0, qty.get(pk, 0)) * preco.get(pk, 0) for pk in preco), 2
         )
 
-    movs = list(_movimentacoes_do_usuario(user).order_by("-data"))
+    movs_qs = _movimentacoes_do_usuario(user).order_by("-data")
+    if filtro:
+        movs_qs = filtro.aplicar_movimentacoes(movs_qs)
+    movs = list(movs_qs)
     valores_rev = []
 
     for y, m in reversed(periodos):
