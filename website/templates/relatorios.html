@@ -168,22 +168,6 @@
     </div>
 </div>
 
-<!-- Export Section -->
-<div class="mt-8 flex gap-3">
-    <button class="btn-secondary flex items-center gap-2">
-        <ion-icon name="download"></ion-icon>
-        Exportar PDF
-    </button>
-    <button class="btn-secondary flex items-center gap-2">
-        <ion-icon name="document"></ion-icon>
-        Exportar Excel
-    </button>
-    <button class="btn-ghost flex items-center gap-2">
-        <ion-icon name="print"></ion-icon>
-        Imprimir
-    </button>
-</div>
-
 {% include "components/chart_movimento_diario.html" with canvas_id="dailyMovementChart" %}
 
 {{ chart_top_produtos|json_script:"chart-top-produtos-data" }}
