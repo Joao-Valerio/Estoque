@@ -160,39 +160,41 @@ function initializeNotifications() {
 
 function initializeSearch() {
 
-    const searchInput =
-        document.querySelector(
-            'input[placeholder*="Buscar"]'
-        );
+    const searchInput = document.querySelector(
+        'input[placeholder*="Buscar"]'
+    );
+    const searchForm = searchInput?.closest('form[role="search"]');
 
-    if (!searchInput) return;
+    if (!searchInput || !searchForm) return;
 
     searchInput.addEventListener(
         'input',
-        debounce(handleSearch, 300)
+        debounce((e) => handleSearch(e, searchForm), 300)
     );
 
 }
 
-function handleSearch(e) {
+function handleSearch(e, searchForm) {
 
     const query = e.target.value.toLowerCase();
 
     if (query.length < 2) {
 
-        clearSearchResults();
+        clearSearchResults(searchForm);
 
         return;
 
     }
 
-    console.log('Buscando:', query);
+    searchForm.requestSubmit();
 
 }
 
-function clearSearchResults() {
-
-    console.log('Limpar busca');
+function clearSearchResults(searchForm) {
+    if (!searchForm) return;
+    const qInput = searchForm.querySelector('input[name="q"]');
+    if (qInput) qInput.value = '';
+    searchForm.requestSubmit();
 
 }
 
