@@ -36,8 +36,9 @@ class OwnerScopedMixin:
         return qs
 
     def form_valid(self, form):
-        if hasattr(form.instance, "usuario_id"):
-            form.instance.usuario = self.request.user
+        instance = getattr(form, "instance", None)
+        if instance is not None and hasattr(instance, "usuario_id"):
+            instance.usuario = self.request.user
         return super().form_valid(form)
 
 
