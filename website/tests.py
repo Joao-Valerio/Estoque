@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Categoria, ContatoMensagem, Fornecedor, Produto
+from .models import Categoria, ContatoMensagem, Fornecedor, Movimentacao, Produto
 
 
 class WebsiteFlowsTestCase(TestCase):
@@ -88,3 +88,18 @@ class WebsiteFlowsTestCase(TestCase):
         mensagem = ContatoMensagem.objects.first()
         self.assertEqual(mensagem.usuario, self.user)
         self.assertEqual(mensagem.assunto, "Ajuda")
+
+    def test_movimentacao_saida_atualiza_estoque(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("create_movimentacao_saida"),
+            data={
+                "produto": self.produto.pk,
+                "destinatario": "Cliente 1",
+                "quantidade": 4,
+                "observacao": "",
+            },
+        )
+        self.assertRedirects(response, reverse("movimentacoes"))
+        self.produto.refresh_from_db()
+        self.assertEqual(self.produto.quantidade, 11)
