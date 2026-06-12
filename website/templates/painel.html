@@ -82,11 +82,17 @@
     <div class="card p-6">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-sand-900">Movimento de Estoque</h3>
-            <select class="input-field text-sm w-32">
-                <option>Este mês</option>
-                <option>Últimos 3 meses</option>
-                <option>Últimos 6 meses</option>
-            </select>
+            <form method="get" action="{% url 'painel' %}">
+                <select
+                    name="periodo"
+                    onchange="this.form.submit()"
+                    class="input-field text-sm w-40"
+                >
+                    <option value="30d" {% if periodo_painel == "30d" %}selected{% endif %}>Este mês</option>
+                    <option value="3m" {% if periodo_painel == "3m" %}selected{% endif %}>Últimos 3 meses</option>
+                    <option value="6m" {% if periodo_painel == "6m" %}selected{% endif %}>Últimos 6 meses</option>
+                </select>
+            </form>
         </div>
         <div class="relative h-72">
             <canvas id="movementChart"></canvas>

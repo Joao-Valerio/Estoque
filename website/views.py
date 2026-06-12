@@ -335,11 +335,16 @@ class PainelPageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        periodo = (self.request.GET.get("periodo") or "30d").strip()
+        if periodo not in {"30d", "3m", "6m"}:
+            periodo = "30d"
+        filtro = FiltroRelatorio(periodo=periodo)
         context["categorias"] = categorias_do_usuario(user).order_by("nome")
         context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco(user)
-        context["movimentacoes"] = _movimentacoes_recentes(user, 15)
-        context["chart_movimento_diario"] = dados_movimento_diario(user)
+        context["movimentacoes"] = _movimentacoes_recentes(user, 15, filtro=filtro)
+        context["chart_movimento_diario"] = dados_movimento_diario(user, filtro=filtro)
         context["top_produtos_vendidos"] = top_produtos_vendidos_painel(user)
+        context["periodo_painel"] = periodo
         context["mais_vendidos"] = sum(
             p["quantidade"] for p in context["top_produtos_vendidos"]
         )
