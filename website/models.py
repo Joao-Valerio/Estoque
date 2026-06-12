@@ -114,3 +114,24 @@ class Movimentacao(models.Model):
 
     def __str__(self):
         return f"{self.produto.nome} - {self.get_tipo_display()}"
+
+
+class ContatoMensagem(models.Model):
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="mensagens_contato",
+        null=True,
+        blank=True,
+    )
+    nome = models.CharField(max_length=120)
+    email = models.EmailField()
+    assunto = models.CharField(max_length=180)
+    mensagem = models.TextField()
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-criado_em",)
+
+    def __str__(self):
+        return f"{self.assunto} ({self.email})"

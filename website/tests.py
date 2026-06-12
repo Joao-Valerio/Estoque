@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Categoria, Fornecedor, Produto
+from .models import Categoria, ContatoMensagem, Fornecedor, Produto
 
 
 class WebsiteFlowsTestCase(TestCase):
@@ -71,3 +71,20 @@ class WebsiteFlowsTestCase(TestCase):
         forbidden = self.client.post(reverse("delete_produto", args=[other_produto.pk]))
         self.assertEqual(forbidden.status_code, 404)
         self.assertTrue(Produto.objects.filter(pk=other_produto.pk).exists())
+
+    def test_contato_post_cria_mensagem(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("contato"),
+            data={
+                "nome": "Usuario Teste",
+                "email": "owner@example.com",
+                "assunto": "Ajuda",
+                "mensagem": "Preciso de suporte.",
+            },
+        )
+        self.assertRedirects(response, reverse("contato"))
+        self.assertEqual(ContatoMensagem.objects.count(), 1)
+        mensagem = ContatoMensagem.objects.first()
+        self.assertEqual(mensagem.usuario, self.user)
+        self.assertEqual(mensagem.assunto, "Ajuda")

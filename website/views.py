@@ -40,12 +40,14 @@ from .forms import (
     PerfilEmailForm,
     PerfilSenhaForm,
     ExcluirContaForm,
+    ContatoForm,
 )
 from .models import (
     Produto,
     Categoria,
     Movimentacao,
     Fornecedor,
+    ContatoMensagem,
 )
 from .mixins import (
     AppLoginRequiredMixin,
@@ -306,8 +308,26 @@ class PerfilPageView(AppLoginRequiredMixin, TemplateView):
 class ConfiguracoesPageView(AppLoginRequiredMixin, TemplateView):
     template_name = "configuracoes.html"
 
-class ContatoPageView(AppLoginRequiredMixin, TemplateView):
+class ContatoPageView(AppLoginRequiredMixin, FormView):
     template_name = "contato.html"
+    form_class = ContatoForm
+    success_url = reverse_lazy("contato")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        contato: ContatoMensagem = form.save(commit=False)
+        if self.request.user.is_authenticated:
+            contato.usuario = self.request.user
+        contato.save()
+        messages.success(
+            self.request,
+            "Mensagem enviada com sucesso. Nossa equipe respondera em breve.",
+        )
+        return super().form_valid(form)
 
 class PainelPageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView):
     template_name = "painel.html"

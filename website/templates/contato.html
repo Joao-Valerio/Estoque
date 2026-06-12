@@ -78,106 +78,65 @@
                     <!-- FORM BODY -->
                     <div class="p-8">
 
-                        <form class="space-y-6">
+                        <form method="post" action="{% url 'contato' %}" class="space-y-6">
+                            {% csrf_token %}
+                            {% if form.non_field_errors %}
+                            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                                {% for err in form.non_field_errors %}
+                                <p>{{ err }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
 
                             <!-- NOME -->
                             <div>
 
-                                <label class="mb-2 block text-sm font-medium text-sand-700">
+                                <label for="{{ form.nome.id_for_label }}" class="mb-2 block text-sm font-medium text-sand-700">
                                     Nome
                                 </label>
-
-                                <input
-                                    type="text"
-                                    placeholder="Digite seu nome"
-                                    class="
-                                        w-full rounded-2xl border border-sand-300
-                                        bg-sand-50
-                                        px-4 py-3
-                                        text-sand-900
-                                        outline-none
-                                        transition
-                                        focus:border-orange-300
-                                        focus:bg-white
-                                        focus:ring-4 focus:ring-orange-100
-                                    "
-                                >
+                                {{ form.nome }}
+                                {% if form.nome.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.nome.errors|striptags }}</p>
+                                {% endif %}
 
                             </div>
 
                             <!-- EMAIL -->
                             <div>
 
-                                <label class="mb-2 block text-sm font-medium text-sand-700">
+                                <label for="{{ form.email.id_for_label }}" class="mb-2 block text-sm font-medium text-sand-700">
                                     E-mail
                                 </label>
-
-                                <input
-                                    type="email"
-                                    placeholder="Digite seu e-mail"
-                                    class="
-                                        w-full rounded-2xl border border-sand-300
-                                        bg-sand-50
-                                        px-4 py-3
-                                        text-sand-900
-                                        outline-none
-                                        transition
-                                        focus:border-orange-300
-                                        focus:bg-white
-                                        focus:ring-4 focus:ring-orange-100
-                                    "
-                                >
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.email.errors|striptags }}</p>
+                                {% endif %}
 
                             </div>
 
                             <!-- ASSUNTO -->
                             <div>
 
-                                <label class="mb-2 block text-sm font-medium text-sand-700">
+                                <label for="{{ form.assunto.id_for_label }}" class="mb-2 block text-sm font-medium text-sand-700">
                                     Assunto
                                 </label>
-
-                                <input
-                                    type="text"
-                                    placeholder="Digite o assunto"
-                                    class="
-                                        w-full rounded-2xl border border-sand-300
-                                        bg-sand-50
-                                        px-4 py-3
-                                        text-sand-900
-                                        outline-none
-                                        transition
-                                        focus:border-orange-300
-                                        focus:bg-white
-                                        focus:ring-4 focus:ring-orange-100
-                                    "
-                                >
+                                {{ form.assunto }}
+                                {% if form.assunto.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.assunto.errors|striptags }}</p>
+                                {% endif %}
 
                             </div>
 
                             <!-- MENSAGEM -->
                             <div>
 
-                                <label class="mb-2 block text-sm font-medium text-sand-700">
+                                <label for="{{ form.mensagem.id_for_label }}" class="mb-2 block text-sm font-medium text-sand-700">
                                     Mensagem
                                 </label>
-
-                                <textarea
-                                    rows="6"
-                                    placeholder="Digite sua mensagem..."
-                                    class="
-                                        w-full resize-none rounded-2xl
-                                        border border-sand-300
-                                        bg-sand-50
-                                        px-4 py-3
-                                        text-sand-900
-                                        outline-none
-                                        transition
-                                        focus:border-orange-300
-                                        focus:bg-white
-                                        focus:ring-4 focus:ring-orange-100
-                                    "
-                                ></textarea>
+                                {{ form.mensagem }}
+                                {% if form.mensagem.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.mensagem.errors|striptags }}</p>
+                                {% endif %}
 
                             </div>
 

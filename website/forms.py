@@ -27,6 +27,7 @@ from .models import (
     Categoria,
     Movimentacao,
     Fornecedor,
+    ContatoMensagem,
 )
 
 
@@ -474,3 +475,68 @@ class UpdateProdutoForm(forms.ModelForm):
         _aplicar_querysets_do_usuario(self, user)
         self.helper = FormHelper()
         attach_helper(self.helper, produto_hero_layout(submit_label=submit_label))
+
+
+class ContatoForm(forms.ModelForm):
+    class Meta:
+        model = ContatoMensagem
+        fields = ["nome", "email", "assunto", "mensagem"]
+        widgets = {
+            "nome": forms.TextInput(
+                attrs={
+                    "class": (
+                        "w-full rounded-2xl border border-sand-300 bg-sand-50 px-4 py-3 "
+                        "text-sand-900 outline-none transition focus:border-orange-300 "
+                        "focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    ),
+                    "placeholder": "Digite seu nome",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": (
+                        "w-full rounded-2xl border border-sand-300 bg-sand-50 px-4 py-3 "
+                        "text-sand-900 outline-none transition focus:border-orange-300 "
+                        "focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    ),
+                    "placeholder": "Digite seu e-mail",
+                }
+            ),
+            "assunto": forms.TextInput(
+                attrs={
+                    "class": (
+                        "w-full rounded-2xl border border-sand-300 bg-sand-50 px-4 py-3 "
+                        "text-sand-900 outline-none transition focus:border-orange-300 "
+                        "focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    ),
+                    "placeholder": "Digite o assunto",
+                }
+            ),
+            "mensagem": forms.Textarea(
+                attrs={
+                    "rows": 6,
+                    "class": (
+                        "w-full resize-none rounded-2xl border border-sand-300 bg-sand-50 "
+                        "px-4 py-3 text-sand-900 outline-none transition focus:border-orange-300 "
+                        "focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    ),
+                    "placeholder": "Digite sua mensagem...",
+                }
+            ),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        if user and getattr(user, "is_authenticated", False):
+            self.fields["nome"].initial = user.first_name or ""
+            self.fields["email"].initial = user.email or ""
+
+    def clean_nome(self):
+        return (self.cleaned_data.get("nome") or "").strip()
+
+    def clean_assunto(self):
+        return (self.cleaned_data.get("assunto") or "").strip()
+
+    def clean_mensagem(self):
+        return (self.cleaned_data.get("mensagem") or "").strip()
