@@ -3,7 +3,9 @@
 <div class="card p-8">
     <p class="text-sand-700 mb-6">
         Tem certeza de que deseja excluir <strong class="text-sand-900">{{ object.nome }}</strong>?
-        Os produtos que referenciarem este fornecedor ficarão sem fornecedor associado.
+        {% if form_delete_extra_message %}
+        {{ form_delete_extra_message }}
+        {% endif %}
     </p>
     <form method="post" class="flex flex-col gap-3 sm:flex-row sm:justify-end">
         {% csrf_token %}

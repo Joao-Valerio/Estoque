@@ -504,6 +504,24 @@ class DeleteFornecedorView(
     form_page_title = "Excluir fornecedor"
     form_page_subtitle = "Esta ação não pode ser desfeita."
     form_delete_cancel_url = reverse_lazy("fornecedores")
+    form_delete_extra_message = (
+        "Os produtos que referenciarem este fornecedor ficarão sem fornecedor associado."
+    )
+
+
+class DeleteProdutoView(
+    AppLoginRequiredMixin, OwnerScopedMixin, DeleteConfirmPageMixin, DeleteView
+):
+    model = Produto
+    success_url = reverse_lazy("produtos")
+    form_page_block_title = "Excluir Produto - StockBot"
+    form_page_title = "Excluir produto"
+    form_page_subtitle = "Esta acao nao pode ser desfeita."
+    form_delete_cancel_url = reverse_lazy("produtos")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Produto excluido com sucesso.")
+        return super().delete(request, *args, **kwargs)
 
 
 class UpdateProdutoPageView(

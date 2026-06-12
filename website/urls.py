@@ -21,6 +21,7 @@ from .views import (
     CreateFornecedorPageView,
     UpdateFornecedorPageView,
     DeleteFornecedorView,
+    DeleteProdutoView,
     UpdateProdutoPageView,
     CadastroUsuarioView,
     LoginUsuarioView,
@@ -77,4 +78,5 @@ urlpatterns = [
     path("fornecedor/editar/<int:pk>/", UpdateFornecedorPageView.as_view(), name="update_fornecedor"),
     path("fornecedor/excluir/<int:pk>/", DeleteFornecedorView.as_view(), name="delete_fornecedor"),
     path("produto/editar/<int:pk>/", UpdateProdutoPageView.as_view(), name="update_produto"),
+    path("produto/excluir/<int:pk>/", DeleteProdutoView.as_view(), name="delete_produto"),
 ]

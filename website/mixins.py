@@ -104,6 +104,7 @@ class DeleteConfirmPageMixin:
     form_variant = "delete"
     form_outer_shell_class = "max-w-lg mx-auto"
     form_delete_cancel_url = ""
+    form_delete_extra_message = ""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -115,6 +116,7 @@ class DeleteConfirmPageMixin:
                 "form_variant": self.form_variant,
                 "form_outer_shell_class": self.form_outer_shell_class,
                 "form_delete_cancel_url": self.form_delete_cancel_url,
+                "form_delete_extra_message": self.form_delete_extra_message,
             }
         )
         return context

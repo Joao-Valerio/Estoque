@@ -1,6 +1,10 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
+
+from .models import Categoria, Fornecedor, Produto
 
 
 class WebsiteFlowsTestCase(TestCase):
@@ -10,8 +14,60 @@ class WebsiteFlowsTestCase(TestCase):
             email="owner@example.com",
             password="123456Teste!",
         )
+        self.other_user = User.objects.create_user(
+            username="other@example.com",
+            email="other@example.com",
+            password="123456Teste!",
+        )
+        self.categoria = Categoria.objects.create(
+            usuario=self.user,
+            nome="Eletronicos",
+            descricao="Categoria principal",
+        )
+        self.fornecedor = Fornecedor.objects.create(
+            usuario=self.user,
+            nome="Fornecedor A",
+            email="fornecedor@example.com",
+            telefone="11999999999",
+            endereco="Rua A, 123",
+        )
+        self.produto = Produto.objects.create(
+            usuario=self.user,
+            nome="Produto teste",
+            descricao="Descricao",
+            preco=Decimal("10.00"),
+            quantidade=15,
+            quantidade_minima=5,
+            categoria=self.categoria,
+            fornecedor=self.fornecedor,
+        )
 
     def test_modelo_route_works(self):
         self.client.force_login(self.user)
         response = self.client.get(reverse("modelo"))
         self.assertEqual(response.status_code, 200)
+
+    def test_delete_produto_only_owner(self):
+        other_categoria = Categoria.objects.create(
+            usuario=self.other_user,
+            nome="Categoria outro",
+            descricao="Descricao",
+        )
+        other_produto = Produto.objects.create(
+            usuario=self.other_user,
+            nome="Produto outro",
+            descricao="Descricao",
+            preco=Decimal("20.00"),
+            quantidade=3,
+            quantidade_minima=1,
+            categoria=other_categoria,
+        )
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("delete_produto", args=[self.produto.pk]))
+        self.assertRedirects(response, reverse("produtos"))
+        self.assertFalse(Produto.objects.filter(pk=self.produto.pk).exists())
+
+        forbidden = self.client.post(reverse("delete_produto", args=[other_produto.pk]))
+        self.assertEqual(forbidden.status_code, 404)
+        self.assertTrue(Produto.objects.filter(pk=other_produto.pk).exists())
