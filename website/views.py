@@ -257,7 +257,7 @@ class HomePageView(TemplateView):
     template_name = "home.html"
 
 class ModeloPageView(AppLoginRequiredMixin, TemplateView):
-    template_name = "modelo.html"
+    template_name = "components.html"
 
 class EstoquePageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView):
     template_name = "estoque.html"
