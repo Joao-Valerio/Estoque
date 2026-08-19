@@ -6,3 +6,4 @@ whitenoise==6.8.2
 psycopg2-binary==2.9.10
 django-crispy-forms==2.4
 crispy-tailwind==1.0.3
+dj-database-url==2.3.0
