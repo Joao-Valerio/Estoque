@@ -2,6 +2,38 @@
 
 {% block title %}Relatórios - StockBot{% endblock %}
 
+{% block extra_css %}
+<style>
+@media print {
+    #sidebar,
+    #sidebar-overlay,
+    #dashboard-header,
+    .no-print {
+        display: none !important;
+    }
+
+    #app > main {
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    #main-scroll-region {
+        overflow: visible !important;
+    }
+
+    body {
+        background: #fff !important;
+    }
+
+    .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #e7e5e4 !important;
+    }
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Header -->
 <div class="mb-8">
@@ -10,7 +42,7 @@
 </div>
 
 <!-- Filtros -->
-<form method="get" action="{% url 'relatorios' %}" class="mb-8">
+<form method="get" action="{% url 'relatorios' %}" class="mb-8 no-print">
     <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
         <div>
             <label for="filtro-periodo" class="block text-sm font-medium text-sand-700 mb-2">Período</label>
@@ -162,10 +194,18 @@
             (<span class="font-medium">{{ movimentacoes_total }}</span> no total{% if filtro.ativo %} com o filtro{% endif %}).
             {% endif %}
         </p>
-        <a href="{% url 'movimentacoes' %}" class="text-sm font-medium text-stone-700 hover:text-stone-900 hover:underline">
+        <a href="{% url 'movimentacoes' %}" class="no-print text-sm font-medium text-stone-700 hover:text-stone-900 hover:underline">
             Ver lista completa →
         </a>
     </div>
+</div>
+
+<div class="mt-8 flex flex-col items-center gap-3 no-print">
+    <button type="button" id="btn-imprimir-relatorio" class="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3">
+        <ion-icon name="print-outline" class="text-lg"></ion-icon>
+        Imprimir relatório
+    </button>
+    <p class="text-xs text-sand-500">Ou use <kbd class="rounded border border-sand-200 bg-sand-50 px-1.5 py-0.5 font-mono text-sand-600">Ctrl</kbd> + <kbd class="rounded border border-sand-200 bg-sand-50 px-1.5 py-0.5 font-mono text-sand-600">P</kbd> no navegador</p>
 </div>
 
 {% include "components/chart_movimento_diario.html" with canvas_id="dailyMovementChart" %}
@@ -336,6 +376,10 @@ new Chart(stockValueCtx, {
             }
         }
     }
+});
+
+document.getElementById('btn-imprimir-relatorio').addEventListener('click', function () {
+    window.print();
 });
 </script>
 
