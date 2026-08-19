@@ -1,13 +1,14 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 *.pyo
 *.egg-info/
 dist/
 build/
 
 # Django
-db.sqlite3
+*.sqlite3
 db.sqlite3-journal
 staticfiles/
 
@@ -31,5 +32,3 @@ Thumbs.db
 
 arquivos markdown/
 *.md
-
-*.pyc
