@@ -8,14 +8,6 @@ from django.utils import timezone
 from .models import Movimentacao, Produto
 from .relatorio_filtros import FiltroRelatorio
 
-
-def _movimentacoes_do_usuario(user):
-    return Movimentacao.objects.filter(produto__usuario=user)
-
-
-def _produtos_do_usuario(user):
-    return Produto.objects.filter(usuario=user)
-
 _MESES_CURTOS = (
     "Jan",
     "Fev",
@@ -37,9 +29,9 @@ def dados_movimento_diario(user, *, dias=7, filtro=None):
     """Soma de unidades de entrada e saída por dia."""
     if filtro:
         dias = filtro.dias_grafico_linha()
-        base = filtro.aplicar_movimentacoes(_movimentacoes_do_usuario(user))
+        base = filtro.aplicar_movimentacoes(Movimentacao.objects.do_usuario(user))
     else:
-        base = _movimentacoes_do_usuario(user)
+        base = Movimentacao.objects.do_usuario(user)
 
     hoje = timezone.localdate()
     inicio = hoje - timedelta(days=dias - 1)
@@ -74,7 +66,7 @@ def dados_movimento_diario(user, *, dias=7, filtro=None):
 
 def dados_top_produtos_movimentados(user, *, limit=5, filtro=None):
     """Top produtos por quantidade total movimentada (entradas + saídas)."""
-    base = _movimentacoes_do_usuario(user)
+    base = Movimentacao.objects.do_usuario(user)
     if filtro:
         base = filtro.aplicar_movimentacoes(base)
     rows = (
@@ -103,7 +95,7 @@ def dados_top_produtos_movimentados(user, *, limit=5, filtro=None):
 def top_produtos_vendidos_painel(user, *, limit=5):
     """Top produtos por unidades vendidas (movimentações de saída)."""
     rows = list(
-        _movimentacoes_do_usuario(user)
+        Movimentacao.objects.do_usuario(user)
         .filter(tipo="S")
         .values("produto_id", "produto__nome")
         .annotate(total=Sum("quantidade"))
@@ -151,7 +143,7 @@ def dados_valor_estoque_mensal(user, *, meses=12, filtro=None):
     if filtro:
         meses = filtro.meses_grafico_valor()
 
-    produtos_qs = _produtos_do_usuario(user)
+    produtos_qs = Produto.objects.do_usuario(user)
     if filtro:
         produtos_qs = filtro.aplicar_produtos(produtos_qs)
     produtos = list(produtos_qs)
@@ -172,7 +164,7 @@ def dados_valor_estoque_mensal(user, *, meses=12, filtro=None):
             sum(max(0, qty.get(pk, 0)) * preco.get(pk, 0) for pk in preco), 2
         )
 
-    movs_qs = _movimentacoes_do_usuario(user).order_by("-data")
+    movs_qs = Movimentacao.objects.do_usuario(user).order_by("-data")
     if filtro:
         movs_qs = filtro.aplicar_movimentacoes(movs_qs)
     movs = list(movs_qs)

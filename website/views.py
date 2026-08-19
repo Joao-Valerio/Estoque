@@ -66,22 +66,6 @@ from .charts import (
 from .relatorio_filtros import FiltroRelatorio, PERIODO_OPCOES
 
 
-def produtos_do_usuario(user):
-    return Produto.objects.filter(usuario=user)
-
-
-def categorias_do_usuario(user):
-    return Categoria.objects.filter(usuario=user)
-
-
-def fornecedores_do_usuario(user):
-    return Fornecedor.objects.filter(usuario=user)
-
-
-def movimentacoes_do_usuario(user):
-    return Movimentacao.objects.filter(produto__usuario=user)
-
-
 def _estoque_status_opcoes_do_banco(user):
     """
     Slugs de status presentes nos produtos (regra: qtd = sem estoque;
@@ -94,7 +78,7 @@ def _estoque_status_opcoes_do_banco(user):
     }
     order = ("ok", "low", "out")
     slugs = set(
-        produtos_do_usuario(user).annotate(
+        Produto.objects.do_usuario(user).annotate(
             status_slug=Case(
                 When(quantidade=0, then=Value("out")),
                 When(quantidade__lte=F("quantidade_minima"), then=Value("low")),
@@ -116,7 +100,7 @@ def _movimentacao_tipos_relatorio(user):
     labels = dict(Movimentacao.TIPOS)
     order = ("E", "S")
     found = set(
-        movimentacoes_do_usuario(user).values_list("tipo", flat=True).distinct()
+        Movimentacao.objects.do_usuario(user).values_list("tipo", flat=True).distinct()
     )
     if not found:
         found = set(order)
@@ -128,7 +112,7 @@ def _categoria_distribuicao_estoque(user, filtro=None):
     Distribuição do valor em estoque por categoria (Σ quantidade × preço unitário).
     Retorna dict com labels, values (float) e flag placeholder quando não há dados.
     """
-    produtos_qs = produtos_do_usuario(user)
+    produtos_qs = Produto.objects.do_usuario(user)
     if filtro:
         produtos_qs = filtro.aplicar_produtos(produtos_qs)
     rows = (
@@ -165,7 +149,7 @@ def _movimentacoes_recentes(user, limit=15, *, annotate_valor_mov=False, filtro=
     Últimas movimentações (produto/fornecedor em join).
     Com annotate_valor_mov=True, acrescenta quantidade × preço unitário atual.
     """
-    qs = movimentacoes_do_usuario(user).select_related("produto", "fornecedor")
+    qs = Movimentacao.objects.do_usuario(user).select_related("produto", "fornecedor")
     if filtro:
         qs = filtro.aplicar_movimentacoes(qs)
     if annotate_valor_mov:
@@ -182,7 +166,7 @@ class DashboardContextMixin:
 
     def get_dashboard_context(self):
         user = self.request.user
-        produtos = produtos_do_usuario(user)
+        produtos = Produto.objects.do_usuario(user)
         total = (
             produtos.annotate(
                 subtotal=F("quantidade") * F("preco")
@@ -232,7 +216,7 @@ class ProdutosPageView(AppLoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        qs = produtos_do_usuario(self.request.user).select_related(
+        qs = Produto.objects.do_usuario(self.request.user).select_related(
             "categoria", "fornecedor"
         ).order_by("nome")
         busca = self.request.GET.get("q", "").strip()
@@ -247,7 +231,7 @@ class ProdutosPageView(AppLoginRequiredMixin, TemplateView):
                 filtros |= Q(pk=int(busca))
             qs = qs.filter(filtros)
         context["produtos"] = qs
-        context["categorias"] = categorias_do_usuario(self.request.user).order_by(
+        context["categorias"] = Categoria.objects.do_usuario(self.request.user).order_by(
             "nome"
         )
         context["busca_q"] = busca
@@ -266,7 +250,7 @@ class EstoquePageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = produtos_do_usuario(self.request.user).select_related(
+        qs = Produto.objects.do_usuario(self.request.user).select_related(
             "categoria", "fornecedor"
         ).order_by("nome")
         busca = self.request.GET.get("q", "").strip()
@@ -277,7 +261,7 @@ class EstoquePageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView
             qs = qs.filter(filtros)
         context["produtos"] = qs
         context["busca_q"] = busca
-        context["movimentacoes_count"] = movimentacoes_do_usuario(
+        context["movimentacoes_count"] = Movimentacao.objects.do_usuario(
             self.request.user
         ).count()
         return context
@@ -288,7 +272,7 @@ class FornecedoresPageView(AppLoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["fornecedores"] = fornecedores_do_usuario(self.request.user).order_by(
+        context["fornecedores"] = Fornecedor.objects.do_usuario(self.request.user).order_by(
             "nome"
         )
         return context
@@ -339,7 +323,7 @@ class PainelPageView(AppLoginRequiredMixin, DashboardContextMixin, TemplateView)
         if periodo not in {"30d", "3m", "6m"}:
             periodo = "30d"
         filtro = FiltroRelatorio(periodo=periodo)
-        context["categorias"] = categorias_do_usuario(user).order_by("nome")
+        context["categorias"] = Categoria.objects.do_usuario(user).order_by("nome")
         context["estoque_status_opcoes"] = _estoque_status_opcoes_do_banco(user)
         context["movimentacoes"] = _movimentacoes_recentes(user, 15, filtro=filtro)
         context["chart_movimento_diario"] = dados_movimento_diario(user, filtro=filtro)
@@ -358,14 +342,14 @@ class RelatoriosPageView(AppLoginRequiredMixin, TemplateView):
         user = self.request.user
         filtro = FiltroRelatorio.from_request(self.request)
 
-        if filtro.categoria_id and not categorias_do_usuario(user).filter(
+        if filtro.categoria_id and not Categoria.objects.do_usuario(user).filter(
             pk=filtro.categoria_id
         ).exists():
             filtro.categoria_id = None
 
-        movs_filtradas = filtro.aplicar_movimentacoes(movimentacoes_do_usuario(user))
+        movs_filtradas = filtro.aplicar_movimentacoes(Movimentacao.objects.do_usuario(user))
 
-        context["categorias"] = categorias_do_usuario(user).order_by("nome")
+        context["categorias"] = Categoria.objects.do_usuario(user).order_by("nome")
         context["tipos"] = _movimentacao_tipos_relatorio(user)
         context["filtro"] = filtro
         context["periodo_opcoes"] = PERIODO_OPCOES
@@ -446,12 +430,15 @@ class CreateMovimentacaoEntradaView(
         mov.destinatario = ""
         qty = mov.quantidade
         with transaction.atomic():
-            updated = produtos_do_usuario(self.request.user).filter(
-                pk=mov.produto_id
-            ).update(quantidade=F("quantidade") + qty)
-            if not updated:
+            prod = (
+                Produto.objects.do_usuario(self.request.user)
+                .filter(pk=mov.produto_id)
+                .first()
+            )
+            if prod is None:
                 form.add_error(None, "Produto não encontrado.")
                 return self.form_invalid(form)
+            prod.registrar_entrada(qty)
             mov.save()
         self.object = mov
         return redirect(self.get_success_url())
@@ -476,23 +463,18 @@ class CreateMovimentacaoSaidaView(
         qty = mov.quantidade
         with transaction.atomic():
             prod = (
-                produtos_do_usuario(self.request.user)
-                .select_for_update()
+                Produto.objects.do_usuario(self.request.user)
                 .filter(pk=mov.produto_id)
                 .first()
             )
             if prod is None:
                 form.add_error(None, "Produto não encontrado.")
                 return self.form_invalid(form)
-            if prod.quantidade < qty:
-                form.add_error(
-                    "quantidade",
-                    f"Estoque insuficiente. Disponível: {prod.quantidade}.",
-                )
+            try:
+                prod.registrar_saida(qty)
+            except ValueError as e:
+                form.add_error("quantidade", str(e))
                 return self.form_invalid(form)
-            produtos_do_usuario(self.request.user).filter(pk=prod.pk).update(
-                quantidade=F("quantidade") - qty
-            )
             mov.save()
         self.object = mov
         return redirect(self.get_success_url())

@@ -1,8 +1,42 @@
+from decimal import Decimal
+
 from django.conf import settings
-from django.db import models
+from django.core.validators import MinValueValidator, RegexValidator
+from django.db import models, transaction
+from django.db.models import F, Q
 
-# Create your models here.
 
+# ---------------------------------------------------------------------------
+#  QuerySets reutilizáveis
+# ---------------------------------------------------------------------------
+
+class OwnerQuerySet(models.QuerySet):
+    """QuerySet com filtro por proprietário (campo `usuario`)."""
+
+    def do_usuario(self, user):
+        return self.filter(usuario=user)
+
+
+class MovimentacaoQuerySet(models.QuerySet):
+    """QuerySet para movimentações (proprietário via produto__usuario)."""
+
+    def do_usuario(self, user):
+        return self.filter(produto__usuario=user)
+
+
+# ---------------------------------------------------------------------------
+#  Validators reutilizáveis
+# ---------------------------------------------------------------------------
+
+_TELEFONE_BR_REGEX = RegexValidator(
+    regex=r"^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$",
+    message="Informe um telefone válido. Ex.: (11) 99999-9999",
+)
+
+
+# ---------------------------------------------------------------------------
+#  Models
+# ---------------------------------------------------------------------------
 
 class Categoria(models.Model):
     usuario = models.ForeignKey(
@@ -14,6 +48,8 @@ class Categoria(models.Model):
     )
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
+
+    objects = OwnerQuerySet.as_manager()
 
     def __str__(self):
         return self.nome
@@ -28,8 +64,10 @@ class Fornecedor(models.Model):
     )
     nome = models.CharField(max_length=100)
     email = models.EmailField()
-    telefone = models.CharField(max_length=15)
+    telefone = models.CharField(max_length=15, validators=[_TELEFONE_BR_REGEX])
     endereco = models.TextField()
+
+    objects = OwnerQuerySet.as_manager()
 
     def __str__(self):
         return self.nome
@@ -45,9 +83,19 @@ class Produto(models.Model):
     )
     nome = models.CharField(max_length=100)
     descricao = models.TextField()
-    preco = models.DecimalField(max_digits=10, decimal_places=2)
-    quantidade = models.IntegerField(default=0)
-    quantidade_minima = models.IntegerField(default=15)
+    preco = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+    quantidade = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
+    )
+    quantidade_minima = models.IntegerField(
+        default=15,
+        validators=[MinValueValidator(0)],
+    )
 
     def estoque_status(self):
         if self.quantidade == 0:
@@ -71,8 +119,58 @@ class Produto(models.Model):
         related_name='produtos'
     )
 
+    objects = OwnerQuerySet.as_manager()
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(preco__gte=0),
+                name="preco_positivo",
+            ),
+            models.CheckConstraint(
+                check=Q(quantidade__gte=0),
+                name="quantidade_positiva",
+            ),
+        ]
+
     def __str__(self):
         return self.nome
+
+    # ------------------------------------------------------------------
+    #  Lógica de negócio — entrada e saída de estoque
+    # ------------------------------------------------------------------
+
+    def registrar_entrada(self, quantidade: int) -> None:
+        """
+        Incrementa o estoque do produto de forma atômica.
+        Deve ser chamado dentro de um ``transaction.atomic()``.
+        """
+        Produto.objects.filter(pk=self.pk).update(
+            quantidade=F("quantidade") + quantidade
+        )
+
+    def registrar_saida(self, quantidade: int) -> None:
+        """
+        Decrementa o estoque do produto de forma atômica e com
+        ``select_for_update`` para evitar race conditions.
+
+        Levanta ``ValueError`` se o estoque for insuficiente.
+        Deve ser chamado dentro de um ``transaction.atomic()``.
+        """
+        prod = (
+            Produto.objects.select_for_update()
+            .filter(pk=self.pk)
+            .first()
+        )
+        if prod is None:
+            raise ValueError("Produto não encontrado.")
+        if prod.quantidade < quantidade:
+            raise ValueError(
+                f"Estoque insuficiente. Disponível: {prod.quantidade}."
+            )
+        Produto.objects.filter(pk=self.pk).update(
+            quantidade=F("quantidade") - quantidade
+        )
 
 
 class Movimentacao(models.Model):
@@ -90,7 +188,9 @@ class Movimentacao(models.Model):
 
     tipo = models.CharField(max_length=1, choices=TIPOS)
 
-    quantidade = models.IntegerField()
+    quantidade = models.IntegerField(
+        validators=[MinValueValidator(1)],
+    )
 
     data = models.DateTimeField(auto_now_add=True)
 
@@ -111,6 +211,8 @@ class Movimentacao(models.Model):
         blank=True,
         default="",
     )
+
+    objects = MovimentacaoQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.produto.nome} - {self.get_tipo_display()}"

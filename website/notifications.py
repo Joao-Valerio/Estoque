@@ -46,7 +46,7 @@ def alertas_estoque_usuario(user, *, limit=50):
     if not user or not user.is_authenticated:
         return []
 
-    base = Produto.objects.filter(usuario=user)
+    base = Produto.objects.do_usuario(user)
     alertas = []
 
     for produto in base.filter(quantidade=0).order_by("nome")[:limit]:
