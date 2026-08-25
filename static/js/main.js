@@ -81,6 +81,8 @@ function closeSidebar() {
 function initializeHeader() {
     const header = document.getElementById('dashboard-header');
     const scrollRoot = document.getElementById('main-scroll-region');
+    const panel = document.getElementById('notifications-panel');
+    const btn = document.getElementById('notifications-btn');
     if (!header || !scrollRoot) return;
 
     let lastScrollTop = scrollRoot.scrollTop;
@@ -89,18 +91,15 @@ function initializeHeader() {
     const apply = () => {
         ticking = false;
         const current = scrollRoot.scrollTop;
-        const hide =
-            current > lastScrollTop && current > 48;
+        const hide = current > lastScrollTop && current > 48;
         if (hide) {
-            header.style.maxHeight = '0';
-            header.style.opacity = '0';
-            header.style.pointerEvents = 'none';
-            header.style.borderColor = 'transparent';
+            header.style.transform = 'translateY(-100%)';
+            if (panel && !panel.classList.contains('hidden')) {
+                panel.classList.add('hidden');
+                btn?.setAttribute('aria-expanded', 'false');
+            }
         } else {
-            header.style.maxHeight = '';
-            header.style.opacity = '';
-            header.style.pointerEvents = '';
-            header.style.borderColor = '';
+            header.style.transform = 'translateY(0)';
         }
         lastScrollTop = current;
     };
@@ -135,6 +134,7 @@ function initializeNotifications() {
     if (!btn || !panel) return;
 
     btn.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
         const aberto = !panel.classList.contains('hidden');
         panel.classList.toggle('hidden');
@@ -152,6 +152,7 @@ function initializeNotifications() {
         if (e.key === 'Escape' && !panel.classList.contains('hidden')) {
             panel.classList.add('hidden');
             btn.setAttribute('aria-expanded', 'false');
+            btn.focus();
         }
     });
 }
@@ -324,24 +325,35 @@ function formatDate(date) {
 
 }
 
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
 // ==================== EXPORT ====================
 
 window.toggleSidebar = toggleSidebar;
-
 window.closeSidebar = closeSidebar;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.showToast = showToast;
 
 window.StockBot = {
-
     toggleSidebar,
-
     closeSidebar,
-
+    openModal,
+    closeModal,
     showToast,
-
     confirmAction,
-
     formatCurrency,
-
     formatDate
-
 };
