@@ -28,6 +28,7 @@ from .models import (
     Movimentacao,
     Fornecedor,
     ContatoMensagem,
+    ConfiguracaoUsuario,
 )
 
 
@@ -540,3 +541,37 @@ class ContatoForm(forms.ModelForm):
 
     def clean_mensagem(self):
         return (self.cleaned_data.get("mensagem") or "").strip()
+
+
+class ConfiguracoesForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracaoUsuario
+        fields = [
+            "notificacoes_ativas",
+            "notificar_sem_estoque",
+            "notificar_estoque_baixo",
+            "relatorios_resumo",
+        ]
+        widgets = {
+            "notificacoes_ativas": forms.CheckboxInput(
+                attrs={
+                    "class": "h-5 w-5 rounded-md border-sand-300 text-stone-700 focus:ring-stone-500 transition cursor-pointer accent-stone-700"
+                }
+            ),
+            "notificar_sem_estoque": forms.CheckboxInput(
+                attrs={
+                    "class": "h-5 w-5 rounded-md border-sand-300 text-stone-700 focus:ring-stone-500 transition cursor-pointer accent-stone-700"
+                }
+            ),
+            "notificar_estoque_baixo": forms.CheckboxInput(
+                attrs={
+                    "class": "h-5 w-5 rounded-md border-sand-300 text-stone-700 focus:ring-stone-500 transition cursor-pointer accent-stone-700"
+                }
+            ),
+            "relatorios_resumo": forms.CheckboxInput(
+                attrs={
+                    "class": "h-5 w-5 rounded-md border-sand-300 text-stone-700 focus:ring-stone-500 transition cursor-pointer accent-stone-700"
+                }
+            ),
+        }
+

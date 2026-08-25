@@ -237,3 +237,31 @@ class ContatoMensagem(models.Model):
 
     def __str__(self):
         return f"{self.assunto} ({self.email})"
+
+
+class ConfiguracaoUsuario(models.Model):
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="configuracao",
+    )
+    notificacoes_ativas = models.BooleanField(
+        default=True,
+        verbose_name="Notificações de estoque ativas",
+        help_text="Exibir alertas de estoque na barra superior",
+    )
+    notificar_sem_estoque = models.BooleanField(
+        default=True,
+        verbose_name="Alertas de produtos sem estoque",
+    )
+    notificar_estoque_baixo = models.BooleanField(
+        default=True,
+        verbose_name="Alertas de produtos com estoque baixo",
+    )
+    relatorios_resumo = models.BooleanField(
+        default=True,
+        verbose_name="Exibir métricas automáticas no painel",
+    )
+
+    def __str__(self):
+        return f"Configurações de {self.usuario}"

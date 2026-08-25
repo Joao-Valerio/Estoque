@@ -41,6 +41,7 @@ from .forms import (
     PerfilSenhaForm,
     ExcluirContaForm,
     ContatoForm,
+    ConfiguracoesForm,
 )
 from .models import (
     Produto,
@@ -48,6 +49,7 @@ from .models import (
     Movimentacao,
     Fornecedor,
     ContatoMensagem,
+    ConfiguracaoUsuario,
 )
 from .mixins import (
     AppLoginRequiredMixin,
@@ -272,9 +274,20 @@ class FornecedoresPageView(AppLoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["fornecedores"] = Fornecedor.objects.do_usuario(self.request.user).order_by(
-            "nome"
-        )
+        qs = Fornecedor.objects.do_usuario(self.request.user).order_by("nome")
+        busca = self.request.GET.get("q", "").strip()
+        if busca:
+            filtros = (
+                Q(nome__icontains=busca)
+                | Q(email__icontains=busca)
+                | Q(telefone__icontains=busca)
+                | Q(endereco__icontains=busca)
+            )
+            if busca.isdigit():
+                filtros |= Q(pk=int(busca))
+            qs = qs.filter(filtros)
+        context["fornecedores"] = qs
+        context["busca_q"] = busca
         return context
 
 class PerfilPageView(AppLoginRequiredMixin, TemplateView):
@@ -289,8 +302,23 @@ class PerfilPageView(AppLoginRequiredMixin, TemplateView):
         return context
 
 
-class ConfiguracoesPageView(AppLoginRequiredMixin, TemplateView):
+class ConfiguracoesPageView(AppLoginRequiredMixin, FormView):
     template_name = "configuracoes.html"
+    form_class = ConfiguracoesForm
+    success_url = reverse_lazy("configuracoes")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        config, _ = ConfiguracaoUsuario.objects.get_or_create(
+            usuario=self.request.user
+        )
+        kwargs["instance"] = config
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, "Preferências e configurações salvas com sucesso!")
+        return super().form_valid(form)
 
 class ContatoPageView(AppLoginRequiredMixin, FormView):
     template_name = "contato.html"

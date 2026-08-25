@@ -5,7 +5,15 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Categoria, ContatoMensagem, Fornecedor, Movimentacao, Produto
+from .models import (
+    Categoria,
+    ContatoMensagem,
+    Fornecedor,
+    Movimentacao,
+    Produto,
+    ConfiguracaoUsuario,
+)
+from .notifications import alertas_estoque_usuario
 
 
 class WebsiteFlowsTestCase(TestCase):
@@ -268,3 +276,104 @@ class ProdutoValidacoesTestCase(TestCase):
         )
         with self.assertRaises(ValidationError):
             produto.full_clean()
+
+
+class ConfiguracaoUsuarioTestCase(TestCase):
+    """Testa persistência e efeitos das configurações do usuário."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="config@example.com",
+            email="config@example.com",
+            password="Password123!",
+        )
+        self.categoria = Categoria.objects.create(
+            usuario=self.user,
+            nome="Geral",
+            descricao="Desc",
+        )
+        self.produto = Produto.objects.create(
+            usuario=self.user,
+            nome="Produto Zerado",
+            descricao="Desc",
+            preco=Decimal("10.00"),
+            quantidade=0,
+            quantidade_minima=5,
+            categoria=self.categoria,
+        )
+
+    def test_configuracoes_get_cria_ou_carrega_configuracao(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("configuracoes"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(ConfiguracaoUsuario.objects.filter(usuario=self.user).exists())
+
+    def test_configuracoes_post_salva_preferencias(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            reverse("configuracoes"),
+            data={
+                "notificacoes_ativas": False,
+                "notificar_sem_estoque": True,
+                "notificar_estoque_baixo": False,
+                "relatorios_resumo": True,
+            },
+        )
+        self.assertRedirects(response, reverse("configuracoes"))
+        config = ConfiguracaoUsuario.objects.get(usuario=self.user)
+        self.assertFalse(config.notificacoes_ativas)
+        self.assertFalse(config.notificar_estoque_baixo)
+
+        # Verifica que alertas_estoque_usuario respeita notificacoes_ativas = False
+        alertas = alertas_estoque_usuario(self.user)
+        self.assertEqual(len(alertas), 0)
+
+
+class FornecedorBuscaTestCase(TestCase):
+    """Testa a funcionalidade de busca por fornecedores."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="fornecedor@example.com",
+            email="fornecedor@example.com",
+            password="Password123!",
+        )
+        self.fornecedor1 = Fornecedor.objects.create(
+            usuario=self.user,
+            nome="Distribuidora Alpha",
+            email="alpha@distribuidora.com",
+            telefone="(11) 91111-1111",
+            endereco="Av. Paulista, 100",
+        )
+        self.fornecedor2 = Fornecedor.objects.create(
+            usuario=self.user,
+            nome="Beta Logística",
+            email="contato@betalog.com",
+            telefone="(21) 92222-2222",
+            endereco="Rua do Ouvidor, 50",
+        )
+
+    def test_busca_fornecedor_por_nome(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("fornecedores"), {"q": "Alpha"})
+        self.assertEqual(response.status_code, 200)
+        fornecedores = response.context["fornecedores"]
+        self.assertEqual(fornecedores.count(), 1)
+        self.assertEqual(fornecedores.first(), self.fornecedor1)
+
+    def test_busca_fornecedor_por_email(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("fornecedores"), {"q": "betalog"})
+        self.assertEqual(response.status_code, 200)
+        fornecedores = response.context["fornecedores"]
+        self.assertEqual(fornecedores.count(), 1)
+        self.assertEqual(fornecedores.first(), self.fornecedor2)
+
+    def test_busca_fornecedor_por_telefone(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("fornecedores"), {"q": "91111"})
+        self.assertEqual(response.status_code, 200)
+        fornecedores = response.context["fornecedores"]
+        self.assertEqual(fornecedores.count(), 1)
+        self.assertEqual(fornecedores.first(), self.fornecedor1)
+
